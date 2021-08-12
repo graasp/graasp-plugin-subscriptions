@@ -1,0 +1,26 @@
+*.log
+*.pid
+*.swp
+
+logs
+tmp
+
+# Build
+dist
+
+# Dependency directory
+node_modules
+
+# Editors
+.idea
+*.iml
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Ignore generated .d.ts files
+types
+
+# ignore yarn.lock
+yarn.lock
