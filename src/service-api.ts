@@ -38,7 +38,7 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
       customer: customer.id,
       items: [{ price: defaultPlanPriceId }],
     });
-    member.extra = { customerId: customer.id, subscriptionId: subscription.id };
+    member.extra = { ...member.extra, customerId: customer.id, subscriptionId: subscription.id };
   });
 
   // schemas
