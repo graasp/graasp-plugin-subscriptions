@@ -1,5 +1,5 @@
 // global
-import { FastifyLoggerInstance } from "fastify";
+import { FastifyLoggerInstance } from 'fastify';
 import {
   Actor,
   DatabaseTransactionHandler,
@@ -8,11 +8,11 @@ import {
   PreHookHandlerType,
   Task,
   TaskStatus,
-} from "graasp";
+} from 'graasp';
 // other services
-import { Member, MemberService } from "graasp";
-import { Stripe } from "stripe";
-import { CustomerExtra } from "../interfaces/customer-extra";
+import { Member, MemberService } from 'graasp';
+import { Stripe } from 'stripe';
+import { CustomerExtra } from '../interfaces/customer-extra';
 
 export abstract class BaseTask<R> implements Task<Actor, R> {
   protected memberService: MemberService;
@@ -32,7 +32,7 @@ export abstract class BaseTask<R> implements Task<Actor, R> {
     this.actor = actor;
     this.memberService = memberService;
     this.stripe = stripe;
-    this.status = "NEW";
+    this.status = 'NEW';
   }
 
   abstract get name(): string;
@@ -45,6 +45,6 @@ export abstract class BaseTask<R> implements Task<Actor, R> {
 
   abstract run(
     handler: DatabaseTransactionHandler,
-    log?: FastifyLoggerInstance
+    log?: FastifyLoggerInstance,
   ): Promise<void | BaseTask<R>[]>;
 }

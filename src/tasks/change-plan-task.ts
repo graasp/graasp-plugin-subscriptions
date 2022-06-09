@@ -1,10 +1,10 @@
-import { BaseTask } from "./base-task";
-import { Stripe } from "stripe";
-import { DatabaseTransactionHandler, Member } from "graasp";
-import { FastifyLoggerInstance } from "fastify";
-import { PayementFailed, PlanNotFound, SubscriptionNotFound } from "../util/errors";
-import { CustomerExtra } from "../interfaces/customer-extra";
-import { Plan } from "../interfaces/plan";
+import { BaseTask } from './base-task';
+import { Stripe } from 'stripe';
+import { DatabaseTransactionHandler, Member } from 'graasp';
+import { FastifyLoggerInstance } from 'fastify';
+import { PayementFailed, PlanNotFound, SubscriptionNotFound } from '../util/errors';
+import { CustomerExtra } from '../interfaces/customer-extra';
+import { Plan } from '../interfaces/plan';
 
 export class ChangePlanTask extends BaseTask<Plan> {
   get name(): string {
@@ -17,13 +17,13 @@ export class ChangePlanTask extends BaseTask<Plan> {
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
-    this.status = "RUNNING";
+    this.status = 'RUNNING';
 
     const {
       extra: { subscriptionId },
     } = this.actor;
 
-    const plan = await this.stripe.prices.retrieve(this.targetId, { expand: ["product"] });
+    const plan = await this.stripe.prices.retrieve(this.targetId, { expand: ['product'] });
     if (!plan) throw new PlanNotFound(this.targetId);
 
     const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
@@ -31,9 +31,9 @@ export class ChangePlanTask extends BaseTask<Plan> {
 
     await this.stripe.subscriptions
       .update(subscriptionId, {
-        billing_cycle_anchor: "now",
-        payment_behavior: "error_if_incomplete",
-        proration_behavior: "always_invoice",
+        billing_cycle_anchor: 'now',
+        payment_behavior: 'error_if_incomplete',
+        proration_behavior: 'always_invoice',
         items: [{ id: subscription.items.data[0].id, price: this.targetId }],
       })
       .catch((error) => {
@@ -48,9 +48,9 @@ export class ChangePlanTask extends BaseTask<Plan> {
       currency: plan.currency,
       interval: plan.recurring.interval,
       description: (<Stripe.Product>plan.product).description,
-      level: Number((<Stripe.Product>plan.product).metadata["level"]),
+      level: Number((<Stripe.Product>plan.product).metadata['level']),
     };
 
-    this.status = "OK";
+    this.status = 'OK';
   }
 }

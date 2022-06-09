@@ -1,10 +1,10 @@
-import { BaseTask } from "./base-task";
-import { Stripe } from "stripe";
-import { DatabaseTransactionHandler, Member } from "graasp";
-import { FastifyLoggerInstance } from "fastify";
-import { CustomerExtra } from "../interfaces/customer-extra";
-import { Card } from "../interfaces/card";
-import { CardNotFound } from "../util/errors";
+import { BaseTask } from './base-task';
+import { Stripe } from 'stripe';
+import { DatabaseTransactionHandler, Member } from 'graasp';
+import { FastifyLoggerInstance } from 'fastify';
+import { CustomerExtra } from '../interfaces/customer-extra';
+import { Card } from '../interfaces/card';
+import { CardNotFound } from '../util/errors';
 
 export class SetDefaultCardTask extends BaseTask<Card> {
   get name(): string {
@@ -17,7 +17,7 @@ export class SetDefaultCardTask extends BaseTask<Card> {
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
-    this.status = "RUNNING";
+    this.status = 'RUNNING';
 
     const {
       extra: { customerId },
@@ -38,6 +38,6 @@ export class SetDefaultCardTask extends BaseTask<Card> {
       lastFourDigits: paymentMethod.card.last4,
     };
 
-    this.status = "OK";
+    this.status = 'OK';
   }
 }

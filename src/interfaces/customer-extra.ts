@@ -1,4 +1,4 @@
-import { UnknownExtra } from "graasp";
+import { UnknownExtra } from 'graasp';
 
 export interface CustomerExtra extends UnknownExtra {
   customerId?: string;

@@ -1,13 +1,13 @@
-import { Member, MemberService } from "graasp";
-import { Stripe } from "stripe";
-import { ChangePlanTask } from "./tasks/change-plan-task";
-import { GetPlansTask } from "./tasks/get-plans-task";
-import { GetOwnPlanTask } from "./tasks/get-own-plan-task";
-import { GetProrationPreviewTask } from "./tasks/get-proration-preview-task";
-import { CreateSetupIntentTask } from "./tasks/create-setup-intent-task";
-import { GetCardsTask } from "./tasks/get-cards-task";
-import { SetDefaultCardTask } from "./tasks/set-default-card-task";
-import { GetCustomerTask } from "./tasks/get-customer-task";
+import { Member, MemberService } from 'graasp';
+import { Stripe } from 'stripe';
+import { ChangePlanTask } from './tasks/change-plan-task';
+import { GetPlansTask } from './tasks/get-plans-task';
+import { GetOwnPlanTask } from './tasks/get-own-plan-task';
+import { GetProrationPreviewTask } from './tasks/get-proration-preview-task';
+import { CreateSetupIntentTask } from './tasks/create-setup-intent-task';
+import { GetCardsTask } from './tasks/get-cards-task';
+import { SetDefaultCardTask } from './tasks/set-default-card-task';
+import { GetCustomerTask } from './tasks/get-customer-task';
 
 export class TaskManager {
   private memberService: MemberService;

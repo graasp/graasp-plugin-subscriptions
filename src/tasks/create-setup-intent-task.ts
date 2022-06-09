@@ -1,9 +1,9 @@
-import { BaseTask } from "./base-task";
-import { Stripe } from "stripe";
-import { DatabaseTransactionHandler, Member } from "graasp";
-import { FastifyLoggerInstance } from "fastify";
-import { CustomerExtra } from "../interfaces/customer-extra";
-import { Intent } from "../interfaces/intent";
+import { BaseTask } from './base-task';
+import { Stripe } from 'stripe';
+import { DatabaseTransactionHandler, Member } from 'graasp';
+import { FastifyLoggerInstance } from 'fastify';
+import { CustomerExtra } from '../interfaces/customer-extra';
+import { Intent } from '../interfaces/intent';
 
 export class CreateSetupIntentTask extends BaseTask<Intent> {
   get name(): string {
@@ -15,7 +15,7 @@ export class CreateSetupIntentTask extends BaseTask<Intent> {
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
-    this.status = "RUNNING";
+    this.status = 'RUNNING';
 
     const {
       extra: { customerId },
@@ -27,6 +27,6 @@ export class CreateSetupIntentTask extends BaseTask<Intent> {
 
     this._result = { clientSecret: intent.client_secret };
 
-    this.status = "OK";
+    this.status = 'OK';
   }
 }

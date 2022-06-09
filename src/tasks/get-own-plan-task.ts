@@ -1,9 +1,9 @@
-import { BaseTask } from "./base-task";
-import { Stripe } from "stripe";
-import { DatabaseTransactionHandler, Member } from "graasp";
-import { FastifyLoggerInstance } from "fastify";
-import { Plan } from "../interfaces/plan";
-import { CustomerExtra } from "../interfaces/customer-extra";
+import { BaseTask } from './base-task';
+import { Stripe } from 'stripe';
+import { DatabaseTransactionHandler, Member } from 'graasp';
+import { FastifyLoggerInstance } from 'fastify';
+import { Plan } from '../interfaces/plan';
+import { CustomerExtra } from '../interfaces/customer-extra';
 
 export class GetOwnPlanTask extends BaseTask<Plan> {
   get name(): string {
@@ -15,14 +15,14 @@ export class GetOwnPlanTask extends BaseTask<Plan> {
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
-    this.status = "RUNNING";
+    this.status = 'RUNNING';
 
     const {
       extra: { subscriptionId },
     } = this.actor;
 
     const subscription = await this.stripe.subscriptions.retrieve(subscriptionId, {
-      expand: ["items.data.price.product"],
+      expand: ['items.data.price.product'],
     });
 
     const price = subscription.items.data[0].price;
@@ -34,11 +34,11 @@ export class GetOwnPlanTask extends BaseTask<Plan> {
       currency: price.currency,
       interval: price.recurring.interval,
       description: (<Stripe.Product>price.product).description,
-      level: Number((<Stripe.Product>price.product).metadata["level"]),
+      level: Number((<Stripe.Product>price.product).metadata['level']),
     };
 
     this._result = plan;
 
-    this.status = "OK";
+    this.status = 'OK';
   }
 }

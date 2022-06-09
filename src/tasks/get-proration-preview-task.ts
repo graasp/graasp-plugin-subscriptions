@@ -1,10 +1,10 @@
-import { BaseTask } from "./base-task";
-import { Stripe } from "stripe";
-import { DatabaseTransactionHandler, Member } from "graasp";
-import { FastifyLoggerInstance } from "fastify";
-import { CustomerExtra } from "../interfaces/customer-extra";
-import { Invoice } from "../interfaces/invoice";
-import { PlanNotFound, SubscriptionNotFound } from "../util/errors";
+import { BaseTask } from './base-task';
+import { Stripe } from 'stripe';
+import { DatabaseTransactionHandler, Member } from 'graasp';
+import { FastifyLoggerInstance } from 'fastify';
+import { CustomerExtra } from '../interfaces/customer-extra';
+import { Invoice } from '../interfaces/invoice';
+import { PlanNotFound, SubscriptionNotFound } from '../util/errors';
 
 export class GetProrationPreviewTask extends BaseTask<Invoice> {
   get name(): string {
@@ -17,13 +17,13 @@ export class GetProrationPreviewTask extends BaseTask<Invoice> {
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
-    this.status = "RUNNING";
+    this.status = 'RUNNING';
 
     const {
       extra: { subscriptionId, customerId },
     } = this.actor;
 
-    const plan = await this.stripe.prices.retrieve(this.targetId, { expand: ["product"] });
+    const plan = await this.stripe.prices.retrieve(this.targetId, { expand: ['product'] });
     if (!plan) throw new PlanNotFound(this.targetId);
 
     const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
@@ -51,6 +51,6 @@ export class GetProrationPreviewTask extends BaseTask<Invoice> {
       currency: invoice.currency,
     };
 
-    this.status = "OK";
+    this.status = 'OK';
   }
 }
