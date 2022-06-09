@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 5
+  version: 6
   cacheKey: 8
 
 "@babel/code-frame@npm:7.12.11":
@@ -127,7 +127,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/graasp@github:graasp/graasp-types.git#master":
+"@types/graasp@github:graasp/graasp-types":
   version: 0.1.0
   resolution: "@types/graasp@https://github.com/graasp/graasp-types.git#commit=1dde116429496a40a080dbaddf489a9f47196302"
   checksum: 8ada1dcede2fcd9bd5cf7c5acda81f3a11a291e240b8f4929c7824e2473932c877fa4ce784f3e0cc39cd545db61ded694c2e1ceb3bf870be1e58f32b36b20cbc
@@ -977,7 +977,7 @@ __metadata:
   resolution: "graasp-subscriptions@workspace:."
   dependencies:
     "@types/eslint": ^7.2.5
-    "@types/graasp": "github:graasp/graasp-types.git#master"
+    "@types/graasp": "github:graasp/graasp-types"
     "@types/node": ^14.14.7
     "@typescript-eslint/eslint-plugin": ^4.7.0
     "@typescript-eslint/parser": ^4.7.0
@@ -1706,11 +1706,11 @@ __metadata:
 
 "typescript@patch:typescript@^4.0.5#~builtin<compat/typescript>":
   version: 4.7.3
-  resolution: "typescript@patch:typescript@npm%3A4.7.3#~builtin<compat/typescript>::version=4.7.3&hash=de8f8a"
+  resolution: "typescript@patch:typescript@npm%3A4.7.3#~builtin<compat/typescript>::version=4.7.3&hash=7ad353"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 8257ce7ecbbf9416da60045a76a99d473698ca9e973fa0ddab7137cacb1587255431176cbbcc801a650938c4dc8109ab88355774829a714fabe56a53a2fe4524
+  checksum: 137d18a77f52254a284960b16ab53d0619f57b69b5d585804b8413f798a1175ce3e774fb95e6a101868577aafe357d8fcfc9171f0dc9fc0c210e9ae59d107cc0
   languageName: node
   linkType: hard
 
