@@ -31,15 +31,23 @@
     "stripe": "^8.167.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^13.1.0",
+    "@commitlint/config-conventional": "^13.1.0",
+    "@trivago/prettier-plugin-sort-imports": "3.2.0",
     "@types/eslint": "^7.2.5",
     "@types/graasp": "github:graasp/graasp-types",
+    "@types/jest": "27.0.1",
     "@types/node": "^14.14.7",
-    "@typescript-eslint/eslint-plugin": "^4.7.0",
-    "@typescript-eslint/parser": "^4.7.0",
+    "@typescript-eslint/eslint-plugin": "5.4.0",
+    "@typescript-eslint/parser": "5.4.0",
     "eslint": "^7.13.0",
-    "fastify": "^3.8.0",
-    "prettier": "^2.3.2",
-    "typescript": "^4.0.5"
+    "eslint-config-prettier": "^8.3.0",
+    "husky": "7.0.4",
+    "jest": "27.3.0",
+    "prettier": "2.5.1",
+    "pretty-quick": "3.1.2",
+    "ts-jest": "27.0.7",
+    "typescript": "4.4.4"
   },
   "packageManager": "yarn@3.2.1"
 }
