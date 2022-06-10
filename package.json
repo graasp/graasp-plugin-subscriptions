@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/graasp/graasp-subscriptions#readme",
   "dependencies": {
-    "fastify": "4.0.0",
+    "fastify": "^3.25.3",
     "stripe": "^8.167.0"
   },
   "devDependencies": {
