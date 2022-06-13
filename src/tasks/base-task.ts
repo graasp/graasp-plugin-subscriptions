@@ -10,12 +10,11 @@ import {
   TaskStatus,
 } from 'graasp';
 // other services
-import { Member, MemberService } from 'graasp';
+import { Member } from 'graasp';
 import { Stripe } from 'stripe';
 import { CustomerExtra } from '../interfaces/customer-extra';
 
 export abstract class BaseTask<R> implements Task<Actor, R> {
-  protected memberService: MemberService;
   protected stripe: Stripe;
   protected _result: R;
   protected _message: string;
@@ -28,9 +27,8 @@ export abstract class BaseTask<R> implements Task<Actor, R> {
   preHookHandler: PreHookHandlerType<R>;
   postHookHandler: PostHookHandlerType<R>;
 
-  constructor(actor: Member<CustomerExtra>, memberService: MemberService, stripe: Stripe) {
+  constructor(actor: Member<CustomerExtra>, stripe: Stripe) {
     this.actor = actor;
-    this.memberService = memberService;
     this.stripe = stripe;
     this.status = 'NEW';
   }

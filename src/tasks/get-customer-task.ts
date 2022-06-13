@@ -11,8 +11,8 @@ export class GetCustomerTask extends BaseTask<Customer> {
     return GetCustomerTask.name;
   }
 
-  constructor(actor: Member<CustomerExtra>, customerId, stripe: Stripe) {
-    super(actor, customerId, stripe);
+  constructor(actor: Member<CustomerExtra>, customerId: string, stripe: Stripe) {
+    super(actor, stripe);
     this.targetId = customerId;
   }
 
@@ -20,7 +20,9 @@ export class GetCustomerTask extends BaseTask<Customer> {
     this.status = 'RUNNING';
 
     const customer = <Stripe.Customer>await this.stripe.customers.retrieve(this.targetId);
-    if (!customer) throw new CustomerNotFound(this.targetId);
+    if (!customer) {
+      throw new CustomerNotFound(this.targetId);
+    }
 
     this._result = {
       id: customer.id,

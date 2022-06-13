@@ -1,5 +1,5 @@
 {
-  "name": "graasp-subscriptions",
+  "name": "graasp-plugin-subscriptions",
   "author": "Graasp Association",
   "version": "0.1.0",
   "description": "",
@@ -20,13 +20,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/graasp/graasp-subscriptions.git"
+    "url": "git+https://github.com/graasp/graasp-plugin-subscriptions.git"
   },
   "license": "AGPL",
   "bugs": {
-    "url": "https://github.com/graasp/graasp-subscriptions/issues"
+    "url": "https://github.com/graasp/graasp-plugin-subscriptions/issues"
   },
-  "homepage": "https://github.com/graasp/graasp-subscriptions#readme",
+  "homepage": "https://github.com/graasp/graasp-plugin-subscriptions#readme",
   "dependencies": {
     "fastify": "4.0.0",
     "stripe": "^8.167.0"

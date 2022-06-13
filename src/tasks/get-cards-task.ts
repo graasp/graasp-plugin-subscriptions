@@ -11,7 +11,7 @@ export class GetCardsTask extends BaseTask<Card[]> {
   }
 
   constructor(member: Member<CustomerExtra>, stripe: Stripe) {
-    super(member, null, stripe);
+    super(member, stripe);
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {

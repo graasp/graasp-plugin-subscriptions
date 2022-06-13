@@ -12,7 +12,7 @@ export class SetDefaultCardTask extends BaseTask<Card> {
   }
 
   constructor(member: Member<CustomerExtra>, cardId: string, stripe: Stripe) {
-    super(member, null, stripe);
+    super(member, stripe);
     this.targetId = cardId;
   }
 
@@ -24,7 +24,9 @@ export class SetDefaultCardTask extends BaseTask<Card> {
     } = this.actor;
 
     const paymentMethod = await this.stripe.paymentMethods.retrieve(this.targetId);
-    if (!paymentMethod) throw new CardNotFound(this.targetId);
+    if (!paymentMethod) {
+      throw new CardNotFound(this.targetId);
+    }
 
     await this.stripe.customers.update(customerId, {
       invoice_settings: {

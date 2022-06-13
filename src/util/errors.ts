@@ -42,8 +42,8 @@ export class CardNotFound extends GraaspSubscriptionsError {
   }
 }
 
-export class PayementFailed extends GraaspSubscriptionsError {
+export class PaymentFailed extends GraaspSubscriptionsError {
   constructor(data?: unknown) {
-    super({ code: 'GSERR005', statusCode: 402, message: 'Payement Failed' }, data);
+    super({ code: 'GSERR005', statusCode: 402, message: 'Payment Failed' }, data);
   }
 }

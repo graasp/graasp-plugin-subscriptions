@@ -14,30 +14,37 @@ import { TaskManager } from './task-manager';
 import { Stripe } from 'stripe';
 import { Member } from 'graasp';
 import { CustomerExtra } from './interfaces/customer-extra';
+import { API_VERSION, COLLECTION_METHOD } from './util/constants';
 
 interface GraaspSubscriptionsOptions {
   stripeSecretKey: string;
-  defaultPlanPriceId: string;
+  // This is called stripeDefaultPlanPriceId, because apparently you the customer is linked to the price instead of the plan
+  // This value should looks like this: price_2KJwvZGcObdOErGj42lU6fER
+  stripeDefaultPlanPriceId: string;
 }
 
 const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, options) => {
-  const { stripeSecretKey, defaultPlanPriceId } = options;
+  const { stripeSecretKey, stripeDefaultPlanPriceId } = options;
   const {
-    members: { dbService: mS, taskManager: memberTaskManager },
+    members: { taskManager: memberTaskManager },
     taskRunner: runner,
   } = fastify;
 
-  const stripe = new Stripe(stripeSecretKey, { apiVersion: '2020-08-27' });
+  // Constants
+  const stripe = new Stripe(stripeSecretKey, { apiVersion: API_VERSION });
 
-  const taskManager = new TaskManager(mS, stripe);
+  const taskManager = new TaskManager(stripe);
 
   runner.setTaskPreHookHandler<Member>(memberTaskManager.getCreateTaskName(), async (member) => {
+    // When a new user is created, we create a new stripe customer subscribed to the free plan
+    // The current behavior when the customer changes plan is to automatically charge them
     const customer = await stripe.customers.create({ name: member.name, email: member.email });
     const subscription = await stripe.subscriptions.create({
-      collection_method: 'charge_automatically',
+      collection_method: COLLECTION_METHOD,
       customer: customer.id,
-      items: [{ price: defaultPlanPriceId }],
+      items: [{ price: stripeDefaultPlanPriceId }],
     });
+    // The stripe informations are saved in the extra, should we save them in their own table ?
     member.extra = { ...member.extra, customerId: customer.id, subscriptionId: subscription.id };
   });
 

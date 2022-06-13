@@ -11,7 +11,7 @@ export class GetOwnPlanTask extends BaseTask<Plan> {
   }
 
   constructor(member: Member<CustomerExtra>, stripe: Stripe) {
-    super(member, null, stripe);
+    super(member, stripe);
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
@@ -30,6 +30,8 @@ export class GetOwnPlanTask extends BaseTask<Plan> {
     const plan = {
       id: price.id,
       name: (<Stripe.Product>price.product).name,
+      // Stripe returns the price in the smallest unit of the choosen currency
+      // ex: 30.00 CHF becomes 3000 cents, should the front end do the conversion ?
       price: price.unit_amount / 100 ?? 0,
       currency: price.currency,
       interval: price.recurring.interval,

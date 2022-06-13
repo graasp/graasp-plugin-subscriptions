@@ -1,4 +1,4 @@
-import { Member, MemberService } from 'graasp';
+import { Member } from 'graasp';
 import { Stripe } from 'stripe';
 import { ChangePlanTask } from './tasks/change-plan-task';
 import { GetPlansTask } from './tasks/get-plans-task';
@@ -10,11 +10,9 @@ import { SetDefaultCardTask } from './tasks/set-default-card-task';
 import { GetCustomerTask } from './tasks/get-customer-task';
 
 export class TaskManager {
-  private memberService: MemberService;
   private stripe: Stripe;
 
-  constructor(memberService: MemberService, stripe: Stripe) {
-    this.memberService = memberService;
+  constructor(stripe: Stripe) {
     this.stripe = stripe;
   }
 

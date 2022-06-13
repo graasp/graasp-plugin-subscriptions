@@ -12,7 +12,7 @@ export class GetProrationPreviewTask extends BaseTask<Invoice> {
   }
 
   constructor(member: Member<CustomerExtra>, planId: string, stripe: Stripe) {
-    super(member, null, stripe);
+    super(member, stripe);
     this.targetId = planId;
   }
 
@@ -24,10 +24,14 @@ export class GetProrationPreviewTask extends BaseTask<Invoice> {
     } = this.actor;
 
     const plan = await this.stripe.prices.retrieve(this.targetId, { expand: ['product'] });
-    if (!plan) throw new PlanNotFound(this.targetId);
+    if (!plan) {
+      throw new PlanNotFound(this.targetId);
+    }
 
     const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
-    if (!subscription) throw new SubscriptionNotFound(this.targetId);
+    if (!subscription) {
+      throw new SubscriptionNotFound(this.targetId);
+    }
 
     const prorationDate = Math.floor(Date.now() / 1000);
 
