@@ -80,12 +80,7 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
       });
 
       const res = await runner.runSingle(t1);
-      member.extra = {
-        ...member.extra,
-        ...res
-      };
-
-      createTasks.push(memberTaskManager.createUpdateTaskSequence(member, member.id, member));
+      createTasks.push(...memberTaskManager.createUpdateTaskSequence(member, member.id, { extra: res }));
     }
 
     const t3 = taskManager.createCreateSetupIntentTask(member);
