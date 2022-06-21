@@ -14,7 +14,7 @@ import { TaskManager } from './task-manager';
 import { Stripe } from 'stripe';
 import { Member } from 'graasp';
 import { CustomerExtra } from './interfaces/customer-extra';
-import { API_VERSION, COLLECTION_METHOD } from './util/constants';
+import { API_VERSION } from './util/constants';
 
 interface GraaspSubscriptionsOptions {
   stripeSecretKey: string;
@@ -34,19 +34,6 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
   const stripe = new Stripe(stripeSecretKey, { apiVersion: API_VERSION });
 
   const taskManager = new TaskManager(stripe);
-
-  runner.setTaskPreHookHandler<Member>(memberTaskManager.getCreateTaskName(), async (member) => {
-    // When a new user is created, we create a new stripe customer subscribed to the free plan
-    // The current behavior when the customer changes plan is to automatically charge them
-    const customer = await stripe.customers.create({ name: member.name, email: member.email });
-    const subscription = await stripe.subscriptions.create({
-      collection_method: COLLECTION_METHOD,
-      customer: customer.id,
-      items: [{ price: stripeDefaultPlanPriceId }],
-    });
-    // The stripe informations are saved in the extra, should we save them in their own table ?
-    member.extra = { ...member.extra, customerId: customer.id, subscriptionId: subscription.id };
-  });
 
   // schemas
   fastify.addSchema(common);
@@ -83,8 +70,26 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
   );
 
   fastify.post('/setup-intent', async ({ member, log }) => {
-    const task = taskManager.createCreateSetupIntentTask(member);
-    return runner.runSingle(task, log);
+    const createTasks = [];
+
+    // if the member doesen't have a stripe account when adding a card, create a new customer
+    if(!member.extra.customerId){
+      const t1 = taskManager.createCreateCustomerTask(member, {
+        member,
+        stripeDefaultPlanPriceId,
+      });
+
+      const res = await runner.runSingle(t1);
+      member.extra = {
+        ...member.extra,
+        ...res
+      };
+
+      createTasks.push(memberTaskManager.createUpdateTaskSequence(member, member.id, member));
+    }
+
+    const t3 = taskManager.createCreateSetupIntentTask(member);
+    return runner.runSingleSequence([ ...createTasks, t3], log);
   });
 
   fastify.get('/cards', async ({ member, log }) => {

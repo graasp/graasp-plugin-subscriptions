@@ -27,6 +27,8 @@ export abstract class BaseTask<R> implements Task<Actor, R> {
   preHookHandler: PreHookHandlerType<R>;
   postHookHandler: PostHookHandlerType<R>;
 
+  input?: unknown;
+
   constructor(actor: Member<CustomerExtra>, stripe: Stripe) {
     this.actor = actor;
     this.stripe = stripe;

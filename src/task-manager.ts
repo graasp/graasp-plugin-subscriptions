@@ -8,6 +8,7 @@ import { CreateSetupIntentTask } from './tasks/create-setup-intent-task';
 import { GetCardsTask } from './tasks/get-cards-task';
 import { SetDefaultCardTask } from './tasks/set-default-card-task';
 import { GetCustomerTask } from './tasks/get-customer-task';
+import { CreateCustomerTask, CreateCustomerTaskInputType } from './tasks/create-customer-task';
 
 export class TaskManager {
   private stripe: Stripe;
@@ -48,6 +49,10 @@ export class TaskManager {
     return GetCustomerTask.name;
   }
 
+  getCreateCustomerTaskName(): string{
+    return CreateCustomerTask.name;
+  }
+
   createChangePlanTask(member: Member, planId): ChangePlanTask {
     return new ChangePlanTask(member, planId, this.stripe);
   }
@@ -78,5 +83,9 @@ export class TaskManager {
 
   createGetCustomerTask(member: Member, customerId: string): GetCustomerTask {
     return new GetCustomerTask(member, customerId, this.stripe);
+  }
+
+  createCreateCustomerTask(member:Member, input: CreateCustomerTaskInputType){
+    return new CreateCustomerTask(member, input, this.stripe);
   }
 }
