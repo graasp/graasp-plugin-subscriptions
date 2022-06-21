@@ -70,20 +70,23 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
   );
 
   fastify.post('/setup-intent', async ({ member, log }) => {
-    const createTasks = [];
+    let extra = member.extra as CustomerExtra;
 
     // if the member doesen't have a stripe account when adding a card, create a new customer
-    if(!member.extra.customerId){
+    const createTasks = [];
+    if(!extra.customerId){
       const t1 = taskManager.createCreateCustomerTask(member, {
         member,
         stripeDefaultPlanPriceId,
       });
 
       const res = await runner.runSingle(t1);
-      createTasks.push(...memberTaskManager.createUpdateTaskSequence(member, member.id, { extra: res }));
+      extra = { ...extra, ...res };
+
+      createTasks.push(...memberTaskManager.createUpdateTaskSequence(member, member.id, { extra }));
     }
 
-    const t3 = taskManager.createCreateSetupIntentTask(member);
+    const t3 = taskManager.createCreateSetupIntentTask(member, { customerId: extra.customerId });
     return runner.runSingleSequence([ ...createTasks, t3], log);
   });
 

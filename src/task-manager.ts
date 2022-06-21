@@ -4,7 +4,7 @@ import { ChangePlanTask } from './tasks/change-plan-task';
 import { GetPlansTask } from './tasks/get-plans-task';
 import { GetOwnPlanTask } from './tasks/get-own-plan-task';
 import { GetProrationPreviewTask } from './tasks/get-proration-preview-task';
-import { CreateSetupIntentTask } from './tasks/create-setup-intent-task';
+import { CreateSetupIntentTask, CreateSetupIntentTaskInputType } from './tasks/create-setup-intent-task';
 import { GetCardsTask } from './tasks/get-cards-task';
 import { SetDefaultCardTask } from './tasks/set-default-card-task';
 import { GetCustomerTask } from './tasks/get-customer-task';
@@ -69,8 +69,8 @@ export class TaskManager {
     return new GetProrationPreviewTask(member, planId, this.stripe);
   }
 
-  createCreateSetupIntentTask(member: Member): CreateSetupIntentTask {
-    return new CreateSetupIntentTask(member, this.stripe);
+  createCreateSetupIntentTask(member: Member, input: CreateSetupIntentTaskInputType): CreateSetupIntentTask {
+    return new CreateSetupIntentTask(member, input, this.stripe);
   }
 
   createGetCardsTask(member: Member): GetCardsTask {

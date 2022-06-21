@@ -5,21 +5,26 @@ import { FastifyLoggerInstance } from 'fastify';
 import { CustomerExtra } from '../interfaces/customer-extra';
 import { Intent } from '../interfaces/intent';
 
+export type CreateSetupIntentTaskInputType = {
+  customerId?: string;
+};
+
 export class CreateSetupIntentTask extends BaseTask<Intent> {
   get name(): string {
     return CreateSetupIntentTask.name;
   }
 
-  constructor(member: Member<CustomerExtra>, stripe: Stripe) {
+  input: CreateSetupIntentTaskInputType;
+
+  constructor(member: Member<CustomerExtra>, input: CreateSetupIntentTaskInputType, stripe: Stripe) {
     super(member, stripe);
+    this.input = input ?? {};
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
     this.status = 'RUNNING';
 
-    const {
-      extra: { customerId },
-    } = this.actor;
+    const { customerId } = this.input;
 
     const intent = await this.stripe.setupIntents.create({
       customer: customerId,
