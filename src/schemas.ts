@@ -1,5 +1,3 @@
-import { Stripe } from 'stripe';
-
 export default {
   $id: 'http://graasp.org/subscriptions/',
   definitions: {
@@ -94,6 +92,12 @@ const getOwnPlan = {
 // schema for changing plan
 const changePlan = {
   params: { $ref: 'http://graasp.org/subscriptions/#/definitions/planIdParam' },
+  body: {
+    type: 'object',
+    cardId: { type: 'string' },
+    required: ['cardId'],
+    additionalProperties: false,
+  },
   response: {
     200: { $ref: 'http://graasp.org/subscriptions/#/definitions/plan' },
   },

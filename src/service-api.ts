@@ -51,11 +51,11 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
   });
 
   // change plan
-  fastify.patch<{ Params: { planId: string } }>(
+  fastify.patch<{ Body: { cardId: string }; Params: { planId: string } }>(
     '/plans/:planId',
     { schema: changePlan },
-    async ({ member, params: { planId }, log }) => {
-      const task = taskManager.createChangePlanTask(member, planId);
+    async ({ member, params: { planId }, body: { cardId }, log }) => {
+      const task = taskManager.createChangePlanTask(member, { planId, cardId });
       return runner.runSingle(task, log);
     },
   );
