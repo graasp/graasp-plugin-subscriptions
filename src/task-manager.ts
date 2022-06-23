@@ -11,7 +11,7 @@ import {
 import { GetCardsTask } from './tasks/get-cards-task';
 import { GetCustomerTask } from './tasks/get-customer-task';
 import { GetOwnPlanTask } from './tasks/get-own-plan-task';
-import { GetPlansTask } from './tasks/get-plans-task';
+import { GetPlansTask, GetPlansTaskInputType } from './tasks/get-plans-task';
 import { GetProrationPreviewTask } from './tasks/get-proration-preview-task';
 import { SetDefaultCardTask } from './tasks/set-default-card-task';
 
@@ -62,8 +62,8 @@ export class TaskManager {
     return new ChangePlanTask(member, input, this.stripe);
   }
 
-  createGetPlansTask(member: Member): GetPlansTask {
-    return new GetPlansTask(member, this.stripe);
+  createGetPlansTask(member: Member, input?: GetPlansTaskInputType): GetPlansTask {
+    return new GetPlansTask(member, this.stripe, input);
   }
 
   createGetOwnPlanTask(member: Member): GetOwnPlanTask {

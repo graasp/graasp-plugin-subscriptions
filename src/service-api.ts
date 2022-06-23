@@ -4,6 +4,7 @@ import { FastifyPluginAsync } from 'fastify';
 // local
 import common, {
   changePlan,
+  getPlan,
   getPlans,
   getOwnPlan,
   getProrationPreview,
@@ -42,6 +43,14 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
   fastify.get('/plans', { schema: getPlans }, async ({ member, log }) => {
     const task = taskManager.createGetPlansTask(member);
     return runner.runSingle(task, log);
+  });
+
+  fastify.get<{ Params: { planId: string } }>(
+    '/plans/:planId', 
+    { schema: getPlan }, 
+    async ({ member, params: { planId }, log }) => {
+    const task = taskManager.createGetPlansTask(member, { product: planId });
+    return (await runner.runSingle(task, log))[0];
   });
 
   // get own plan

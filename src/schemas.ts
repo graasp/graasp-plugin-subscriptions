@@ -84,6 +84,13 @@ export default {
   },
 };
 
+const getPlan = {
+  params: { $ref: 'http://graasp.org/subscriptions/#/definitions/planIdParam' },
+  response: {
+    200: { $ref: 'http://graasp.org/subscriptions/#/definitions/plan' },
+  },
+};
+
 // schema for getting plans
 const getPlans = {
   response: {
@@ -152,6 +159,7 @@ const getCurrentCustomer = {
 };
 
 export {
+  getPlan,
   getPlans,
   getOwnPlan,
   changePlan,

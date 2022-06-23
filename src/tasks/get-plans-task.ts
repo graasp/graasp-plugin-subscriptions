@@ -6,13 +6,20 @@ import { Plan } from '../interfaces/plan';
 import { CustomerExtra } from '../interfaces/customer-extra';
 import { DEFAULT_PRICE, INDIVIDUAL_PLAN } from '../util/constants';
 
+export type GetPlansTaskInputType = {
+    product?: string;
+};
+
 export class GetPlansTask extends BaseTask<Plan[]> {
   get name(): string {
     return GetPlansTask.name;
   }
 
-  constructor(member: Member<CustomerExtra>, stripe: Stripe) {
+  input: GetPlansTaskInputType;
+
+  constructor(member: Member<CustomerExtra>, stripe: Stripe, input?: GetPlansTaskInputType) {
     super(member, stripe);
+    this.input = input;
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
@@ -21,7 +28,10 @@ export class GetPlansTask extends BaseTask<Plan[]> {
     // This block of code takes all the Individual plans (Organisations plans or similar may exist in the future)
     // And then sort them by level, the level is a metadata used to rank the plans (ex. Free < Standard < Professional)
     // All the additional informations linked to a plan are stored in the metadata
-    const plans = Array.from((await this.stripe.prices.list({ expand: ['data.product'] })).data
+    const plans = Array.from((await this.stripe.prices.list({
+        product: this.input?.product ?? undefined,
+        expand: ['data.product'] 
+      })).data
       .filter((price) => (<Stripe.Product>price.product).metadata['type'] === INDIVIDUAL_PLAN)
       // This lines creates a Map containing all the productsId with their prices
       // ex: { key: "prod_xxx", entry: [{ price1 }, { price2 }] }
