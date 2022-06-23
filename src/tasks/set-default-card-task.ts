@@ -1,10 +1,13 @@
-import { BaseTask } from './base-task';
 import { Stripe } from 'stripe';
-import { DatabaseTransactionHandler, Member } from 'graasp';
+
 import { FastifyLoggerInstance } from 'fastify';
-import { CustomerExtra } from '../interfaces/customer-extra';
+
+import { DatabaseTransactionHandler, Member } from 'graasp';
+
 import { Card } from '../interfaces/card';
+import { CustomerExtra } from '../interfaces/customer-extra';
 import { CardNotFound } from '../util/errors';
+import { BaseTask } from './base-task';
 
 export class SetDefaultCardTask extends BaseTask<Card> {
   get name(): string {

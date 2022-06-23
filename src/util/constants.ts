@@ -4,3 +4,4 @@ export const PAYMENT_BEHAVIOR = 'error_if_incomplete';
 export const PRORATION_BEHAVIOR = 'always_invoice';
 export const COLLECTION_METHOD = 'charge_automatically';
 export const INDIVIDUAL_PLAN = 'INDIVIDUAL_PLAN';
+export const DEFAULT_PRICE = 0;

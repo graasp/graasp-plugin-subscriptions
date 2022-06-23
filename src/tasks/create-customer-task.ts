@@ -1,9 +1,12 @@
-import { BaseTask } from './base-task';
 import { Stripe } from 'stripe';
-import { DatabaseTransactionHandler, Member } from 'graasp';
+
 import { FastifyLoggerInstance } from 'fastify';
+
+import { DatabaseTransactionHandler, Member } from 'graasp';
+
 import { CustomerExtra } from '../interfaces/customer-extra';
 import { COLLECTION_METHOD } from '../util/constants';
+import { BaseTask } from './base-task';
 
 export type CreateCustomerTaskInputType = {
   member?: Member;

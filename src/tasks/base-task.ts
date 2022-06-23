@@ -1,5 +1,8 @@
 // global
+import { Stripe } from 'stripe';
+
 import { FastifyLoggerInstance } from 'fastify';
+
 import {
   Actor,
   DatabaseTransactionHandler,
@@ -11,7 +14,7 @@ import {
 } from 'graasp';
 // other services
 import { Member } from 'graasp';
-import { Stripe } from 'stripe';
+
 import { CustomerExtra } from '../interfaces/customer-extra';
 
 export abstract class BaseTask<R> implements Task<Actor, R> {

@@ -1,5 +1,7 @@
 import { Stripe } from 'stripe';
+
 import { Member } from 'graasp';
+
 import { ChangePlanTask, ChangePlanTaskInputType } from './tasks/change-plan-task';
 import { CreateCustomerTask, CreateCustomerTaskInputType } from './tasks/create-customer-task';
 import {

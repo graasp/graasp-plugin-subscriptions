@@ -4,6 +4,7 @@ import { DatabaseTransactionHandler, Member } from 'graasp';
 import { FastifyLoggerInstance } from 'fastify';
 import { Plan } from '../interfaces/plan';
 import { CustomerExtra } from '../interfaces/customer-extra';
+import { DEFAULT_PRICE } from '../util/constants';
 
 export class GetOwnPlanTask extends BaseTask<Plan> {
   get name(): string {
@@ -28,13 +29,16 @@ export class GetOwnPlanTask extends BaseTask<Plan> {
     const price = subscription.items.data[0].price;
 
     const plan = {
-      id: price.id,
+      id: (<Stripe.Product>price.product).id,
       name: (<Stripe.Product>price.product).name,
       // Stripe returns the price in the smallest unit of the choosen currency
       // ex: 30.00 CHF becomes 3000 cents, should the front end do the conversion ?
-      price: price.unit_amount / 100 ?? 0,
-      currency: price.currency,
-      interval: price.recurring.interval,
+      prices: [{
+        id: price.id,
+        price: price.unit_amount / 100 ?? DEFAULT_PRICE,
+        currency: price.currency,
+        interval: price.recurring.interval,
+      }],
       description: (<Stripe.Product>price.product).description,
       level: Number((<Stripe.Product>price.product).metadata['level']),
     };

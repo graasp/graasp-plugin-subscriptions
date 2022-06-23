@@ -18,8 +18,8 @@ import { API_VERSION } from './util/constants';
 
 interface GraaspSubscriptionsOptions {
   stripeSecretKey: string;
-  // This is called stripeDefaultPlanPriceId, because apparently you the customer is linked to the price instead of the plan
-  // This value should looks like this: price_2KJwvZGcObdOErGj42lU6fER
+  // This is called stripeDefaultPlanPriceId, because the customer is linked to the price instead of the plan
+  // This value should looks like this: price_XXXXXXXXXXXXXXXXXXXXXXXX             
   stripeDefaultPlanPriceId: string;
 }
 

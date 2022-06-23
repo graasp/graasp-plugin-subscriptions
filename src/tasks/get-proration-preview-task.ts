@@ -1,10 +1,14 @@
-import { BaseTask } from './base-task';
 import { Stripe } from 'stripe';
-import { DatabaseTransactionHandler, Member } from 'graasp';
+
 import { FastifyLoggerInstance } from 'fastify';
+
+import { DatabaseTransactionHandler, Member } from 'graasp';
+
 import { CustomerExtra } from '../interfaces/customer-extra';
 import { Invoice } from '../interfaces/invoice';
 import { PlanNotFound, SubscriptionNotFound } from '../util/errors';
+import { getProrationDate } from '../util/utils';
+import { BaseTask } from './base-task';
 
 export class GetProrationPreviewTask extends BaseTask<Invoice> {
   get name(): string {
@@ -33,7 +37,7 @@ export class GetProrationPreviewTask extends BaseTask<Invoice> {
       throw new SubscriptionNotFound(this.targetId);
     }
 
-    const prorationDate = Math.floor(Date.now() / 1000);
+    const prorationDate = getProrationDate();
 
     const items = [
       {

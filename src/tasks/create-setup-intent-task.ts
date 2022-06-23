@@ -1,9 +1,12 @@
-import { BaseTask } from './base-task';
 import { Stripe } from 'stripe';
-import { DatabaseTransactionHandler, Member } from 'graasp';
+
 import { FastifyLoggerInstance } from 'fastify';
+
+import { DatabaseTransactionHandler, Member } from 'graasp';
+
 import { CustomerExtra } from '../interfaces/customer-extra';
 import { Intent } from '../interfaces/intent';
+import { BaseTask } from './base-task';
 
 export type CreateSetupIntentTaskInputType = {
   customerId?: string;
@@ -16,7 +19,11 @@ export class CreateSetupIntentTask extends BaseTask<Intent> {
 
   input: CreateSetupIntentTaskInputType;
 
-  constructor(member: Member<CustomerExtra>, input: CreateSetupIntentTaskInputType, stripe: Stripe) {
+  constructor(
+    member: Member<CustomerExtra>,
+    input: CreateSetupIntentTaskInputType,
+    stripe: Stripe,
+  ) {
     super(member, stripe);
     this.input = input ?? {};
   }

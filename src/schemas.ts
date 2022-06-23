@@ -17,14 +17,26 @@ export default {
       },
     },
 
+    price: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        price: { type: 'number' },
+        currency: { type: 'string' },
+        interval: { type: 'string' },
+      },
+      additionalProperties: false,
+    },
+
     plan: {
       type: 'object',
       properties: {
         id: { type: 'string' },
         name: { type: 'string' },
-        price: { type: 'number' },
-        currency: { type: 'string' },
-        interval: { type: 'string' },
+        prices: {
+          type: 'array',
+          items: { $ref: 'http://graasp.org/subscriptions/#/definitions/price' },
+        },
         description: { type: 'string' },
         level: { type: 'number' },
       },

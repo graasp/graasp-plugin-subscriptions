@@ -5,7 +5,7 @@ import { FastifyLoggerInstance } from 'fastify';
 import { PaymentFailed, PlanNotFound, SubscriptionNotFound } from '../util/errors';
 import { CustomerExtra } from '../interfaces/customer-extra';
 import { Plan } from '../interfaces/plan';
-import { BILLING_CYCLE_ANCHOR, PAYMENT_BEHAVIOR, PRORATION_BEHAVIOR } from '../util/constants';
+import { BILLING_CYCLE_ANCHOR, DEFAULT_PRICE, PAYMENT_BEHAVIOR, PRORATION_BEHAVIOR } from '../util/constants';
 
 export type ChangePlanTaskInputType = {
   planId: string;
@@ -51,20 +51,23 @@ export class ChangePlanTask extends BaseTask<Plan> {
         // this allows the user to choose the card for the subscription
         default_payment_method: cardId,
         // this links the subscription id to the price id for the current user
-        // the price is the id of the price: price_2KJwvZGcObdOErGj42lU6fER
-        items: [{ id: subscription.items.data[0].id, price: this.targetId }],
+        // the price is the id of the price: price_XXXXXXXXXXXXXXXXXXXXXXXX
+        items: [{ id: subscription.items.data[0].id, price: planId }],
       })
       .catch((error) => {
-        console.log(error);
-        throw new PaymentFailed(this.targetId);
+        log.error(error);
+        throw new PaymentFailed(planId);
       });
 
     this._result = {
-      id: plan.id,
+      id: (<Stripe.Product>plan.product).id,
       name: (<Stripe.Product>plan.product).name,
-      price: plan.unit_amount ?? 0,
-      currency: plan.currency,
-      interval: plan.recurring.interval,
+      prices: [{
+        id: plan.id,
+        price: plan.unit_amount / 100 ?? DEFAULT_PRICE,
+        currency: plan.currency,
+        interval: plan.recurring.interval,
+      }],
       description: (<Stripe.Product>plan.product).description,
       level: Number((<Stripe.Product>plan.product).metadata['level']),
     };

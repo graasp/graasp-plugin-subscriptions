@@ -1,3 +1,5 @@
+import { StatusCodes } from 'http-status-codes';
+
 import { GraaspError, GraaspErrorDetails } from 'graasp';
 
 export class GraaspSubscriptionsError implements GraaspError {
@@ -20,30 +22,39 @@ export class GraaspSubscriptionsError implements GraaspError {
 
 export class PlanNotFound extends GraaspSubscriptionsError {
   constructor(data?: unknown) {
-    super({ code: 'GSERR001', statusCode: 404, message: 'Plan not found' }, data);
+    super({ code: 'GSERR001', statusCode: StatusCodes.NOT_FOUND, message: 'Plan not found' }, data);
   }
 }
 
 export class CustomerNotFound extends GraaspSubscriptionsError {
   constructor(data?: unknown) {
-    super({ code: 'GSERR002', statusCode: 404, message: 'Customer not found' }, data);
+    super(
+      { code: 'GSERR002', statusCode: StatusCodes.NOT_FOUND, message: 'Customer not found' },
+      data,
+    );
   }
 }
 
 export class SubscriptionNotFound extends GraaspSubscriptionsError {
   constructor(data?: unknown) {
-    super({ code: 'GSERR003', statusCode: 404, message: 'Subscription not found' }, data);
+    super(
+      { code: 'GSERR003', statusCode: StatusCodes.NOT_FOUND, message: 'Subscription not found' },
+      data,
+    );
   }
 }
 
 export class CardNotFound extends GraaspSubscriptionsError {
   constructor(data?: unknown) {
-    super({ code: 'GSERR004', statusCode: 404, message: 'Card not found' }, data);
+    super({ code: 'GSERR004', statusCode: StatusCodes.NOT_FOUND, message: 'Card not found' }, data);
   }
 }
 
 export class PaymentFailed extends GraaspSubscriptionsError {
   constructor(data?: unknown) {
-    super({ code: 'GSERR005', statusCode: 402, message: 'Payment Failed' }, data);
+    super(
+      { code: 'GSERR005', statusCode: StatusCodes.PAYMENT_REQUIRED, message: 'Payment Failed' },
+      data,
+    );
   }
 }
