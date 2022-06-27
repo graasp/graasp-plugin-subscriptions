@@ -114,7 +114,6 @@ const changePlan = {
   body: {
     type: 'object',
     cardId: { type: 'string' },
-    required: ['cardId'],
     additionalProperties: false,
   },
   response: {
