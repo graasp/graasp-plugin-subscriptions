@@ -14,6 +14,7 @@ import { GetOwnPlanTask } from './tasks/get-own-plan-task';
 import { GetPlansTask, GetPlansTaskInputType } from './tasks/get-plans-task';
 import { GetProrationPreviewTask } from './tasks/get-proration-preview-task';
 import { SetDefaultCardTask } from './tasks/set-default-card-task';
+import { CreateSubscriptionTask, CreateSubscriptionTaskInputType } from './tasks/create-subscription-task';
 
 export class TaskManager {
   private stripe: Stripe;
@@ -70,7 +71,7 @@ export class TaskManager {
     return new GetOwnPlanTask(member, this.stripe);
   }
 
-  createGetProrationPreviewTask(member: Member, planId): GetProrationPreviewTask {
+  createGetProrationPreviewTask(member: Member, planId: string): GetProrationPreviewTask {
     return new GetProrationPreviewTask(member, planId, this.stripe);
   }
 
@@ -95,5 +96,9 @@ export class TaskManager {
 
   createCreateCustomerTask(member: Member, input: CreateCustomerTaskInputType) {
     return new CreateCustomerTask(member, input, this.stripe);
+  }
+
+  createCreateSubscriptionTask(member: Member, input:CreateSubscriptionTaskInputType){
+    return new CreateSubscriptionTask(member, input, this.stripe);
   }
 }

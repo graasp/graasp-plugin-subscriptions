@@ -20,12 +20,12 @@ import { API_VERSION } from './util/constants';
 interface GraaspSubscriptionsOptions {
   stripeSecretKey: string;
   // This is called stripeDefaultPlanPriceId, because the customer is linked to the price instead of the plan
-  // This value should looks like this: price_XXXXXXXXXXXXXXXXXXXXXXXX             
-  stripeDefaultPlanPriceId: string;
+  // This value should looks like this: product_XXXXXXXXXXXXXXXXXXXXXXXX
+  stripeDefaultProductId: string;
 }
 
 const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, options) => {
-  const { stripeSecretKey, stripeDefaultPlanPriceId } = options;
+  const { stripeSecretKey, stripeDefaultProductId } = options;
   const {
     members: { taskManager: memberTaskManager },
     taskRunner: runner,
@@ -46,8 +46,8 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
   });
 
   fastify.get<{ Params: { planId: string } }>(
-    '/plans/:planId', 
-    { schema: getPlan }, 
+    '/plans/:planId',
+    { schema: getPlan },
     async ({ member, params: { planId }, log }) => {
     const task = taskManager.createGetPlansTask(member, { product: planId });
     return (await runner.runSingle(task, log))[0];
@@ -55,6 +55,10 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
 
   // get own plan
   fastify.get('/plans/own', { schema: getOwnPlan }, async ({ member, log }) => {
+    if(!(<CustomerExtra>member.extra).subscriptionId){
+      return { id: stripeDefaultProductId };
+    }
+
     const task = taskManager.createGetOwnPlanTask(member);
     return runner.runSingle(task, log);
   });
@@ -64,6 +68,23 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
     '/plans/:planId',
     { schema: changePlan },
     async ({ member, params: { planId }, body: { cardId }, log }) => {
+
+      let extra = member.extra;
+
+      if(!extra.subscriptionId) {
+        const t1 = taskManager.createCreateSubscriptionTask(member, {
+          member,
+          priceId: planId,
+          cardId,
+        });
+
+        const res = await runner.runSingle(t1);
+        extra = { ...extra, ...res };
+
+        const tasks = memberTaskManager.createUpdateTaskSequence(member, member.id, { extra });
+        return runner.runSingleSequence(tasks, log);
+      }
+
       const task = taskManager.createChangePlanTask(member, { planId, cardId });
       return runner.runSingle(task, log);
     },
@@ -86,7 +107,6 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
     if(!extra.customerId){
       const t1 = taskManager.createCreateCustomerTask(member, {
         member,
-        stripeDefaultPlanPriceId,
       });
 
       const res = await runner.runSingle(t1);

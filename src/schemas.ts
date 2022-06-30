@@ -113,7 +113,9 @@ const changePlan = {
   params: { $ref: 'http://graasp.org/subscriptions/#/definitions/planIdParam' },
   body: {
     type: 'object',
-    cardId: { type: 'string' },
+    properties: {
+      cardId: { type: 'string' },
+    },
     additionalProperties: false,
   },
   response: {

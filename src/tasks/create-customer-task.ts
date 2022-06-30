@@ -5,12 +5,10 @@ import { FastifyLoggerInstance } from 'fastify';
 import { DatabaseTransactionHandler, Member } from 'graasp';
 
 import { CustomerExtra } from '../interfaces/customer-extra';
-import { COLLECTION_METHOD } from '../util/constants';
 import { BaseTask } from './base-task';
 
 export type CreateCustomerTaskInputType = {
   member?: Member;
-  stripeDefaultPlanPriceId: string;
 };
 
 export class CreateCustomerTask extends BaseTask<CustomerExtra> {
@@ -28,16 +26,11 @@ export class CreateCustomerTask extends BaseTask<CustomerExtra> {
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
     this.status = 'RUNNING';
 
-    const { member, stripeDefaultPlanPriceId } = this.input;
+    const { member } = this.input;
 
     const customer = await this.stripe.customers.create({ name: member.name, email: member.email });
-    const subscription = await this.stripe.subscriptions.create({
-      collection_method: COLLECTION_METHOD,
-      customer: customer.id,
-      items: [{ price: stripeDefaultPlanPriceId }],
-    });
     // The stripe informations are saved in the extra, should we save them in their own table ?
-    this._result = { customerId: customer.id, subscriptionId: subscription.id };
+    this._result = { customerId: customer.id };
 
     this.status = 'OK';
   }
