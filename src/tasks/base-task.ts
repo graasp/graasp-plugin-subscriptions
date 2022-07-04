@@ -16,9 +16,11 @@ import {
 import { Member } from 'graasp';
 
 import { CustomerExtra } from '../interfaces/customer-extra';
+import { SubscriptionService } from '../db-service';
 
 export abstract class BaseTask<R> implements Task<Actor, R> {
   protected stripe: Stripe;
+  protected subscriptionService: SubscriptionService;
   protected _result: R;
   protected _message: string;
 
@@ -32,10 +34,11 @@ export abstract class BaseTask<R> implements Task<Actor, R> {
 
   input?: unknown;
 
-  constructor(actor: Member<CustomerExtra>, stripe: Stripe) {
+  constructor(actor: Member<CustomerExtra>, stripe: Stripe, subscriptionService?: SubscriptionService) {
     this.actor = actor;
     this.stripe = stripe;
     this.status = 'NEW';
+    this.subscriptionService = subscriptionService;
   }
 
   abstract get name(): string;

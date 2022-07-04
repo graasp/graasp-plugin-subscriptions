@@ -30,6 +30,7 @@
   "dependencies": {
     "fastify": "^3.25.3",
     "http-status-codes": "2.2.0",
+    "slonik": "28.1.1",
     "stripe": "^8.167.0"
   },
   "devDependencies": {

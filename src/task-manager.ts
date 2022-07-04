@@ -15,9 +15,12 @@ import { GetPlansTask, GetPlansTaskInputType } from './tasks/get-plans-task';
 import { GetProrationPreviewTask } from './tasks/get-proration-preview-task';
 import { SetDefaultCardTask } from './tasks/set-default-card-task';
 import { CreateSubscriptionTask, CreateSubscriptionTaskInputType } from './tasks/create-subscription-task';
+import { SubscriptionService } from './db-service';
 
 export class TaskManager {
   private stripe: Stripe;
+
+  private subscriptionService = new SubscriptionService();
 
   constructor(stripe: Stripe) {
     this.stripe = stripe;
@@ -60,7 +63,7 @@ export class TaskManager {
   }
 
   createChangePlanTask(member: Member, input: ChangePlanTaskInputType): ChangePlanTask {
-    return new ChangePlanTask(member, input, this.stripe);
+    return new ChangePlanTask(member, input, this.stripe, this.subscriptionService);
   }
 
   createGetPlansTask(member: Member, input?: GetPlansTaskInputType): GetPlansTask {
@@ -95,10 +98,10 @@ export class TaskManager {
   }
 
   createCreateCustomerTask(member: Member, input: CreateCustomerTaskInputType) {
-    return new CreateCustomerTask(member, input, this.stripe);
+    return new CreateCustomerTask(member, input, this.stripe, this.subscriptionService);
   }
 
   createCreateSubscriptionTask(member: Member, input:CreateSubscriptionTaskInputType){
-    return new CreateSubscriptionTask(member, input, this.stripe);
+    return new CreateSubscriptionTask(member, input, this.stripe, this.subscriptionService);
   }
 }

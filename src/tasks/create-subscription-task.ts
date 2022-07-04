@@ -7,6 +7,7 @@ import { DatabaseTransactionHandler, Member } from 'graasp';
 import { CustomerExtra } from '../interfaces/customer-extra';
 import { COLLECTION_METHOD } from '../util/constants';
 import { BaseTask } from './base-task';
+import { SubscriptionService } from '../db-service';
 
 export type CreateSubscriptionTaskInputType = {
   member?: Member<CustomerExtra>;
@@ -21,8 +22,8 @@ export class CreateSubscriptionTask extends BaseTask<CustomerExtra> {
 
   input: CreateSubscriptionTaskInputType;
 
-  constructor(member: Member<CustomerExtra>, input: CreateSubscriptionTaskInputType, stripe: Stripe) {
-    super(member, stripe);
+  constructor(member: Member<CustomerExtra>, input: CreateSubscriptionTaskInputType, stripe: Stripe, subscriptionService: SubscriptionService) {
+    super(member, stripe, subscriptionService);
     this.input = input;
   }
 
@@ -43,6 +44,11 @@ export class CreateSubscriptionTask extends BaseTask<CustomerExtra> {
       default_payment_method: cardId,
       items: [{ price: priceId }],
     });
+
+    const sub = await this.subscriptionService.get(this.actor.id, handler);
+    // update memberId
+    this.subscriptionService.update(sub.id, { ...sub, subscriptionId: subscription.id}, handler);
+
 
     // The stripe informations are saved in the extra, should we save them in their own table ?
     this._result = { subscriptionId: subscription.id };

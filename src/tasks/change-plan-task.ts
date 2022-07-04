@@ -6,6 +6,7 @@ import { PaymentFailed, PlanNotFound, SubscriptionNotFound } from '../util/error
 import { CustomerExtra } from '../interfaces/customer-extra';
 import { Plan } from '../interfaces/plan';
 import { BILLING_CYCLE_ANCHOR, DEFAULT_PRICE, PAYMENT_BEHAVIOR, PRORATION_BEHAVIOR } from '../util/constants';
+import { SubscriptionService } from '../db-service';
 
 export type ChangePlanTaskInputType = {
   planId: string;
@@ -19,8 +20,8 @@ export class ChangePlanTask extends BaseTask<Plan> {
 
   input: ChangePlanTaskInputType;
 
-  constructor(member: Member<CustomerExtra>, input: ChangePlanTaskInputType, stripe: Stripe) {
-    super(member, stripe);
+  constructor(member: Member<CustomerExtra>, input: ChangePlanTaskInputType, stripe: Stripe, subscriptionService: SubscriptionService) {
+    super(member, stripe, subscriptionService);
     this.input = input;
   }
 
@@ -58,6 +59,11 @@ export class ChangePlanTask extends BaseTask<Plan> {
         log.error(error);
         throw new PaymentFailed(planId);
       });
+
+    // update planId
+    const sub = await this.subscriptionService.get(this.actor.id, handler);
+    // update memberId
+    this.subscriptionService.update(sub.id, { ...sub, planId: (<Stripe.Product>plan.product).id }, handler);
 
     this._result = {
       id: (<Stripe.Product>plan.product).id,
