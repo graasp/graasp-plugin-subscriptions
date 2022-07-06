@@ -7,11 +7,14 @@ import {
   IndividualResultType,
   PostHookHandlerType,
   PreHookHandlerType,
-  Task,
   TaskStatus,
 } from 'graasp';
 
-export abstract class BaseTask<R> implements Task<Actor, R> {
+import { SubscriptionService } from '../db-service';
+import { BaseTask } from '../../tasks/base-task';
+
+export abstract class BaseSubscriptionTask<R> extends BaseTask<R> {
+  protected subscriptionService: SubscriptionService;
   protected _result: R;
   protected _message: string;
 
@@ -26,11 +29,9 @@ export abstract class BaseTask<R> implements Task<Actor, R> {
   input?: unknown;
   getInput: () => unknown;
 
-  skip? :boolean;
-
-  constructor(actor: Actor) {
-    this.actor = actor;
-    this.status = 'NEW';
+  constructor(actor: Actor, subscriptionService: SubscriptionService) {
+    super(actor);
+    this.subscriptionService = subscriptionService;
   }
 
   abstract get name(): string;

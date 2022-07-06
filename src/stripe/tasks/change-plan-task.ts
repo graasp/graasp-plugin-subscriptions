@@ -1,50 +1,45 @@
-import { BaseTask } from './base-task';
 import { Stripe } from 'stripe';
-import { DatabaseTransactionHandler, Member } from 'graasp';
+import { Actor, DatabaseTransactionHandler } from 'graasp';
 import { FastifyLoggerInstance } from 'fastify';
-import { PaymentFailed, PlanNotFound, SubscriptionNotFound } from '../util/errors';
-import { CustomerExtra } from '../interfaces/customer-extra';
+import { PaymentFailed, PlanNotFound, SubscriptionNotFound } from '../../util/errors';
 import { Plan } from '../interfaces/plan';
-import { BILLING_CYCLE_ANCHOR, DEFAULT_PRICE, PAYMENT_BEHAVIOR, PRORATION_BEHAVIOR } from '../util/constants';
-import { SubscriptionService } from '../db-service';
+import { BILLING_CYCLE_ANCHOR, DEFAULT_PRICE, PAYMENT_BEHAVIOR, PRORATION_BEHAVIOR } from '../../util/constants';
+import { BaseStripeTask } from './base-stripe-task';
 
 export type ChangePlanTaskInputType = {
-  planId: string;
-  cardId:string;
+  planId?: string;
+  cardId?:string;
+  subscriptionId?: string;
 }
 
-export class ChangePlanTask extends BaseTask<Plan> {
+export class ChangePlanTask extends BaseStripeTask<Plan> {
   get name(): string {
     return ChangePlanTask.name;
   }
 
   input: ChangePlanTaskInputType;
 
-  constructor(member: Member<CustomerExtra>, input: ChangePlanTaskInputType, stripe: Stripe, subscriptionService: SubscriptionService) {
-    super(member, stripe, subscriptionService);
-    this.input = input;
+  constructor(member: Actor, input: ChangePlanTaskInputType, stripe: Stripe) {
+    super(member, stripe);
+    this.input = input ?? {};
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
     this.status = 'RUNNING';
 
-    const {
-      extra: { subscriptionId },
-    } = this.actor;
+    const { cardId, planId, subscriptionId } = this.input;
 
-    const { cardId, planId } = this.input;
-
-    const plan = await this.stripe.prices.retrieve(planId, { expand: ['product'] });
+    const plan = await this.stripeService.prices.retrieve(planId, { expand: ['product'] });
     if (!plan) {
       throw new PlanNotFound(planId);
     }
 
-    const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
+    const subscription = await this.stripeService.subscriptions.retrieve(subscriptionId);
     if (!subscription) {
       throw new SubscriptionNotFound(planId);
     }
 
-    await this.stripe.subscriptions
+    await this.stripeService.subscriptions
       .update(subscriptionId, {
         billing_cycle_anchor: BILLING_CYCLE_ANCHOR,
         payment_behavior: PAYMENT_BEHAVIOR,
@@ -59,11 +54,6 @@ export class ChangePlanTask extends BaseTask<Plan> {
         log.error(error);
         throw new PaymentFailed(planId);
       });
-
-    // update planId
-    const sub = await this.subscriptionService.get(this.actor.id, handler);
-    // update memberId
-    this.subscriptionService.update(sub.id, { ...sub, planId: (<Stripe.Product>plan.product).id }, handler);
 
     this._result = {
       id: (<Stripe.Product>plan.product).id,

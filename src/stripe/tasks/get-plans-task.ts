@@ -1,25 +1,24 @@
-import { BaseTask } from './base-task';
 import { Stripe } from 'stripe';
-import { DatabaseTransactionHandler, Member } from 'graasp';
+import { Actor, DatabaseTransactionHandler } from 'graasp';
 import { FastifyLoggerInstance } from 'fastify';
 import { Plan } from '../interfaces/plan';
-import { CustomerExtra } from '../interfaces/customer-extra';
-import { DEFAULT_PRICE, INDIVIDUAL_PLAN } from '../util/constants';
+import { DEFAULT_PRICE, INDIVIDUAL_PLAN } from '../../util/constants';
+import { BaseStripeTask } from './base-stripe-task';
 
 export type GetPlansTaskInputType = {
-    product?: string;
+  product?: string;
 };
 
-export class GetPlansTask extends BaseTask<Plan[]> {
+export class GetPlansTask extends BaseStripeTask<Plan[]> {
   get name(): string {
     return GetPlansTask.name;
   }
 
   input: GetPlansTaskInputType;
 
-  constructor(member: Member<CustomerExtra>, stripe: Stripe, input?: GetPlansTaskInputType) {
+  constructor(member: Actor, stripe: Stripe, input?: GetPlansTaskInputType) {
     super(member, stripe);
-    this.input = input;
+    this.input = input ?? {};
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
@@ -28,9 +27,9 @@ export class GetPlansTask extends BaseTask<Plan[]> {
     // This block of code takes all the Individual plans (Organisations plans or similar may exist in the future)
     // And then sort them by level, the level is a metadata used to rank the plans (ex. Free < Standard < Professional)
     // All the additional informations linked to a plan are stored in the metadata
-    const plans = Array.from((await this.stripe.prices.list({
+    const plans = Array.from((await this.stripeService.prices.list({
         product: this.input?.product ?? undefined,
-        expand: ['data.product'] 
+        expand: ['data.product']
       })).data
       .filter((price) => (<Stripe.Product>price.product).metadata['type'] === INDIVIDUAL_PLAN)
       // This lines creates a Map containing all the productsId with their prices

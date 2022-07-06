@@ -1,17 +1,18 @@
 // global
 import { FastifyLoggerInstance } from 'fastify';
-
 import {
   Actor,
   DatabaseTransactionHandler,
   IndividualResultType,
   PostHookHandlerType,
   PreHookHandlerType,
-  Task,
   TaskStatus,
 } from 'graasp';
+import Stripe from 'stripe';
+import { BaseTask } from '../../tasks/base-task';
 
-export abstract class BaseTask<R> implements Task<Actor, R> {
+export abstract class BaseStripeTask<R> extends BaseTask<R> {
+  protected stripeService: Stripe;
   protected _result: R;
   protected _message: string;
 
@@ -26,11 +27,9 @@ export abstract class BaseTask<R> implements Task<Actor, R> {
   input?: unknown;
   getInput: () => unknown;
 
-  skip? :boolean;
-
-  constructor(actor: Actor) {
-    this.actor = actor;
-    this.status = 'NEW';
+  constructor(actor: Actor, stripeService?: Stripe) {
+    super(actor);
+    this.stripeService = stripeService;
   }
 
   abstract get name(): string;

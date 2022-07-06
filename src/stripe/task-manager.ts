@@ -8,19 +8,16 @@ import {
   CreateSetupIntentTask,
   CreateSetupIntentTaskInputType,
 } from './tasks/create-setup-intent-task';
-import { GetCardsTask } from './tasks/get-cards-task';
-import { GetCustomerTask } from './tasks/get-customer-task';
-import { GetOwnPlanTask } from './tasks/get-own-plan-task';
+import { GetCardsTask, GetCardsTaskInputType } from './tasks/get-cards-task';
+import { GetCustomerTask, GetCustomerTaskInputType } from './tasks/get-customer-task';
+import { GetOwnPlanTask, GetOwnPlanTaskInputType } from './tasks/get-own-plan-task';
 import { GetPlansTask, GetPlansTaskInputType } from './tasks/get-plans-task';
-import { GetProrationPreviewTask } from './tasks/get-proration-preview-task';
-import { SetDefaultCardTask } from './tasks/set-default-card-task';
+import { GetProrationPreviewTask, GetProrationPreviewTaskInputType } from './tasks/get-proration-preview-task';
+import { SetDefaultCardTask, SetDefaultCardTaskInputType } from './tasks/set-default-card-task';
 import { CreateSubscriptionTask, CreateSubscriptionTaskInputType } from './tasks/create-subscription-task';
-import { SubscriptionService } from './db-service';
 
 export class TaskManager {
   private stripe: Stripe;
-
-  private subscriptionService = new SubscriptionService();
 
   constructor(stripe: Stripe) {
     this.stripe = stripe;
@@ -63,19 +60,19 @@ export class TaskManager {
   }
 
   createChangePlanTask(member: Member, input: ChangePlanTaskInputType): ChangePlanTask {
-    return new ChangePlanTask(member, input, this.stripe, this.subscriptionService);
+    return new ChangePlanTask(member, input, this.stripe);
   }
 
   createGetPlansTask(member: Member, input?: GetPlansTaskInputType): GetPlansTask {
     return new GetPlansTask(member, this.stripe, input);
   }
 
-  createGetOwnPlanTask(member: Member): GetOwnPlanTask {
-    return new GetOwnPlanTask(member, this.stripe);
+  createGetOwnPlanTask(member: Member, input: GetOwnPlanTaskInputType): GetOwnPlanTask {
+    return new GetOwnPlanTask(member, input, this.stripe);
   }
 
-  createGetProrationPreviewTask(member: Member, planId: string): GetProrationPreviewTask {
-    return new GetProrationPreviewTask(member, planId, this.stripe);
+  createGetProrationPreviewTask(member: Member, input: GetProrationPreviewTaskInputType): GetProrationPreviewTask {
+    return new GetProrationPreviewTask(member, input, this.stripe);
   }
 
   createCreateSetupIntentTask(
@@ -85,23 +82,23 @@ export class TaskManager {
     return new CreateSetupIntentTask(member, input, this.stripe);
   }
 
-  createGetCardsTask(member: Member): GetCardsTask {
-    return new GetCardsTask(member, this.stripe);
+  createGetCardsTask(member: Member, input?: GetCardsTaskInputType): GetCardsTask {
+    return new GetCardsTask(member, input, this.stripe);
   }
 
-  createSetDefaultCardTask(member: Member, cardId: string): SetDefaultCardTask {
-    return new SetDefaultCardTask(member, cardId, this.stripe);
+  createSetDefaultCardTask(member: Member, input: SetDefaultCardTaskInputType): SetDefaultCardTask {
+    return new SetDefaultCardTask(member, input, this.stripe);
   }
 
-  createGetCustomerTask(member: Member, customerId: string): GetCustomerTask {
-    return new GetCustomerTask(member, customerId, this.stripe);
+  createGetCustomerTask(member: Member, input?: GetCustomerTaskInputType): GetCustomerTask {
+    return new GetCustomerTask(member, input, this.stripe);
   }
 
   createCreateCustomerTask(member: Member, input: CreateCustomerTaskInputType) {
-    return new CreateCustomerTask(member, input, this.stripe, this.subscriptionService);
+    return new CreateCustomerTask(member, input, this.stripe);
   }
 
   createCreateSubscriptionTask(member: Member, input:CreateSubscriptionTaskInputType){
-    return new CreateSubscriptionTask(member, input, this.stripe, this.subscriptionService);
+    return new CreateSubscriptionTask(member, input, this.stripe);
   }
 }

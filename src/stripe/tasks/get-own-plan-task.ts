@@ -1,28 +1,33 @@
-import { BaseTask } from './base-task';
 import { Stripe } from 'stripe';
-import { DatabaseTransactionHandler, Member } from 'graasp';
+import { Actor, DatabaseTransactionHandler } from 'graasp';
 import { FastifyLoggerInstance } from 'fastify';
 import { Plan } from '../interfaces/plan';
-import { CustomerExtra } from '../interfaces/customer-extra';
-import { DEFAULT_PRICE } from '../util/constants';
+import { DEFAULT_PRICE } from '../../util/constants';
+import { BaseStripeTask } from './base-stripe-task';
 
-export class GetOwnPlanTask extends BaseTask<Plan> {
+export type GetOwnPlanTaskInputType = {
+  subscriptionId?: string;
+};
+
+export class GetOwnPlanTask extends BaseStripeTask<Plan> {
   get name(): string {
     return GetOwnPlanTask.name;
   }
 
-  constructor(member: Member<CustomerExtra>, stripe: Stripe) {
+  input?: GetOwnPlanTaskInputType;
+  getInput: () => GetOwnPlanTaskInputType;
+
+  constructor(member: Actor, input: GetOwnPlanTaskInputType, stripe: Stripe) {
     super(member, stripe);
+    this.input = input ?? {};
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
     this.status = 'RUNNING';
 
-    const {
-      extra: { subscriptionId },
-    } = this.actor;
+    const { subscriptionId } = this.input;
 
-    const subscription = await this.stripe.subscriptions.retrieve(subscriptionId, {
+    const subscription = await this.stripeService.subscriptions.retrieve(subscriptionId, {
       expand: ['items.data.price.product'],
     });
 

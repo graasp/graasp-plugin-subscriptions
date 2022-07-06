@@ -26,26 +26,27 @@ export class SubscriptionService {
     sql`, `,
   );
 
-  /**
-   * Create invitation and return it.
-   * @param invitation Invitation to create
-   * @param transactionHandler Database transaction handler
-   */
-  async create(invitation: Partial<Subscription>, transactionHandler: TrxHandler): Promise<Subscription> {
+  private static ReverseColumns = new Map<string, string>([
+    ['id', 'id'],
+    ['creator', 'creator'],
+    ['customerId', 'customer_id'],
+    ['subscriptionId', 'subscription_id'],
+    ['planId', 'plan_id'],
+    ['createdAt', 'created_at'],
+    ['updatedAt', 'updated_at'],
+  ]);
+
+  async create(subscription: Partial<Subscription>, transactionHandler: TrxHandler): Promise<Subscription> {
     return transactionHandler
       .query<Subscription>(
         sql`
         INSERT INTO "member_plan" (
           "creator",
-          "plan_id",
-          "customer_id",
-          "subscription_id"
+          "plan_id"
         )
         VALUES (
-            ${invitation.creator},
-            ${invitation.planId},
-            ${invitation.customerId},
-            ${invitation.subscriptionId},
+            ${subscription.creator},
+            ${subscription.planId}
         )
         RETURNING ${SubscriptionService.allColumns}
       `,
@@ -53,11 +54,6 @@ export class SubscriptionService {
       .then(({ rows }) => rows[0]);
   }
 
-  /**
-   * Get invitation by id or null if it is not found
-   * @param id Invitation id
-   * @param transactionHandler Database transaction handler
-   */
   async get(id: string, transactionHandler: TrxHandler): Promise<Subscription> {
     return transactionHandler
       .query<Subscription>(
@@ -70,6 +66,19 @@ export class SubscriptionService {
       .then(({ rows }) => rows[0] || null);
   }
 
+  async getByMemberId(id: string, transactionHandler: TrxHandler): Promise<Subscription> {
+    return transactionHandler
+      .query<Subscription>(
+        sql`
+        SELECT ${SubscriptionService.allColumns}
+        FROM member_plan
+        WHERE creator = ${id}
+      `,
+      )
+      .then(({ rows }) => rows[0] || null);
+  }
+
+
    async update(
     id: string,
     data: Partial<Subscription>,
@@ -79,8 +88,8 @@ export class SubscriptionService {
     // properties present in data
     const setValues = sql.join(
       Object.keys(data).map((key: keyof Subscription) =>
-        sql.join([sql.identifier([key]), sql`${data[key]}`], sql` = `),
-      ),
+       sql.join([sql.identifier([SubscriptionService.ReverseColumns.get(key)]), sql`${data[key]}`], sql` = `),
+       ),
       sql`, `,
     );
 

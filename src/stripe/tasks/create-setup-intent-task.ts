@@ -1,18 +1,14 @@
 import { Stripe } from 'stripe';
-
 import { FastifyLoggerInstance } from 'fastify';
-
-import { DatabaseTransactionHandler, Member } from 'graasp';
-
-import { CustomerExtra } from '../interfaces/customer-extra';
+import { Actor, DatabaseTransactionHandler } from 'graasp';
 import { Intent } from '../interfaces/intent';
-import { BaseTask } from './base-task';
+import { BaseStripeTask } from './base-stripe-task';
 
 export type CreateSetupIntentTaskInputType = {
   customerId?: string;
 };
 
-export class CreateSetupIntentTask extends BaseTask<Intent> {
+export class CreateSetupIntentTask extends BaseStripeTask<Intent> {
   get name(): string {
     return CreateSetupIntentTask.name;
   }
@@ -20,7 +16,7 @@ export class CreateSetupIntentTask extends BaseTask<Intent> {
   input: CreateSetupIntentTaskInputType;
 
   constructor(
-    member: Member<CustomerExtra>,
+    member: Actor,
     input: CreateSetupIntentTaskInputType,
     stripe: Stripe,
   ) {
@@ -33,7 +29,7 @@ export class CreateSetupIntentTask extends BaseTask<Intent> {
 
     const { customerId } = this.input;
 
-    const intent = await this.stripe.setupIntents.create({
+    const intent = await this.stripeService.setupIntents.create({
       customer: customerId,
     });
 
