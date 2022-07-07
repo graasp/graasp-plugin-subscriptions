@@ -1,9 +1,12 @@
 import { Stripe } from 'stripe';
+
 import { FastifyLoggerInstance } from 'fastify';
+
 import { Actor, DatabaseTransactionHandler } from 'graasp';
+
+import { Subscription } from '../../subscriptions/interfaces/subscription';
 import { COLLECTION_METHOD } from '../../util/constants';
 import { BaseStripeTask } from './base-stripe-task';
-import { Subscription } from '../../subscriptions/interfaces/subscription';
 
 export type CreateSubscriptionTaskInputType = {
   customerId?: string;
@@ -27,11 +30,7 @@ export class CreateSubscriptionTask extends BaseStripeTask<Partial<Subscription>
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
     this.status = 'RUNNING';
 
-    const {
-      customerId,
-      priceId,
-      cardId,
-    } = this.input;
+    const { customerId, priceId, cardId } = this.input;
 
     const subscription = await this.stripeService.subscriptions.create({
       collection_method: COLLECTION_METHOD,
@@ -46,4 +45,3 @@ export class CreateSubscriptionTask extends BaseStripeTask<Partial<Subscription>
     this.status = 'OK';
   }
 }
-

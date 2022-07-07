@@ -1,4 +1,5 @@
-import { sql, DatabaseTransactionConnection as TrxHandler } from 'slonik';
+import { DatabaseTransactionConnection as TrxHandler, sql } from 'slonik';
+
 import { Plan } from './interfaces/plan';
 
 /**
@@ -60,17 +61,13 @@ export class PlanService {
         sql`
         SELECT ${PlanService.allColumns}
         FROM plan
-        WHERE plan_id = 'prod_JwqcRdicDd9fbX'
+        WHERE plan_id = ${planId}
       `,
       )
       .then(({ rows }) => rows[0] || null);
   }
 
-   async update(
-    id: string,
-    data: Partial<Plan>,
-    transactionHandler: TrxHandler,
-  ): Promise<Plan> {
+  async update(id: string, data: Partial<Plan>, transactionHandler: TrxHandler): Promise<Plan> {
     // dynamically build "column1 = value1, column2 = value2, ..." based on the
     // properties present in data
     const setValues = sql.join(

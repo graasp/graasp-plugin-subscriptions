@@ -1,11 +1,11 @@
 import { Actor, DatabaseTransactionHandler } from 'graasp';
+
 import { SubscriptionService } from '../db-service';
 import { Subscription } from '../interfaces/subscription';
-
 import { BaseSubscriptionTask } from './base-subscription-task';
 
 export type UpdateSubscriptionTaskInputType = {
-  subscription: Partial<Subscription>;
+  subscription?: Partial<Subscription>;
 };
 
 export class UpdateSubscriptionTask extends BaseSubscriptionTask<Subscription> {
@@ -19,10 +19,10 @@ export class UpdateSubscriptionTask extends BaseSubscriptionTask<Subscription> {
   constructor(
     member: Actor,
     input: UpdateSubscriptionTaskInputType,
-    subscriptionService: SubscriptionService
+    subscriptionService: SubscriptionService,
   ) {
     super(member, subscriptionService);
-    this.input = input;
+    this.input = input ?? {};
   }
 
   async run(handler: DatabaseTransactionHandler): Promise<void> {

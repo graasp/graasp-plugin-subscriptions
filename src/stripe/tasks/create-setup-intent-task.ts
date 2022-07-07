@@ -1,6 +1,9 @@
 import { Stripe } from 'stripe';
+
 import { FastifyLoggerInstance } from 'fastify';
+
 import { Actor, DatabaseTransactionHandler } from 'graasp';
+
 import { Intent } from '../interfaces/intent';
 import { BaseStripeTask } from './base-stripe-task';
 
@@ -15,11 +18,7 @@ export class CreateSetupIntentTask extends BaseStripeTask<Intent> {
 
   input: CreateSetupIntentTaskInputType;
 
-  constructor(
-    member: Actor,
-    input: CreateSetupIntentTaskInputType,
-    stripe: Stripe,
-  ) {
+  constructor(member: Actor, input: CreateSetupIntentTaskInputType, stripe: Stripe) {
     super(member, stripe);
     this.input = input ?? {};
   }

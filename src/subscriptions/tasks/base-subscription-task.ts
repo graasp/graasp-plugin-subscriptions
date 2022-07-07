@@ -10,8 +10,8 @@ import {
   TaskStatus,
 } from 'graasp';
 
-import { SubscriptionService } from '../db-service';
 import { BaseTask } from '../../tasks/base-task';
+import { SubscriptionService } from '../db-service';
 
 export abstract class BaseSubscriptionTask<R> extends BaseTask<R> {
   protected subscriptionService: SubscriptionService;

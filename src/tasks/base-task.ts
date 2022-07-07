@@ -26,7 +26,7 @@ export abstract class BaseTask<R> implements Task<Actor, R> {
   input?: unknown;
   getInput: () => unknown;
 
-  skip? :boolean;
+  skip?: boolean;
 
   constructor(actor: Actor) {
     this.actor = actor;

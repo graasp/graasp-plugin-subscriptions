@@ -1,14 +1,17 @@
 import { Stripe } from 'stripe';
+
 import { FastifyLoggerInstance } from 'fastify';
+
 import { Actor, DatabaseTransactionHandler } from 'graasp';
-import { Invoice } from '../interfaces/invoice';
+
 import { PlanNotFound, SubscriptionNotFound } from '../../util/errors';
 import { getProrationDate } from '../../util/utils';
+import { Invoice } from '../interfaces/invoice';
 import { BaseStripeTask } from './base-stripe-task';
 
 export type GetProrationPreviewTaskInputType = {
-  subscriptionId?: string,
-  customerId?: string,
+  subscriptionId?: string;
+  customerId?: string;
   planId?: string;
 };
 
@@ -28,7 +31,7 @@ export class GetProrationPreviewTask extends BaseStripeTask<Invoice> {
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
     this.status = 'RUNNING';
 
-    const { subscriptionId, customerId, planId }= this.input;
+    const { subscriptionId, customerId, planId } = this.input;
 
     const plan = await this.stripeService.prices.retrieve(planId, { expand: ['product'] });
     if (!plan) {

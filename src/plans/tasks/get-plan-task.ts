@@ -1,6 +1,6 @@
 import { Actor, DatabaseTransactionHandler } from 'graasp';
-import { PlanNotFound } from '../../util/errors';
 
+import { PlanNotFound } from '../../util/errors';
 import { PlanService } from '../db-service';
 import { Plan } from '../interfaces/plan';
 import { BasePlanTask } from './base-plan-task';
@@ -17,13 +17,9 @@ export class GetPlanTask extends BasePlanTask<Plan> {
   input: GetPlanTaskInputType;
   getInput: () => GetPlanTaskInputType;
 
-  constructor(
-    member: Actor,
-    input: GetPlanTaskInputType,
-    dbService: PlanService,
-  ) {
+  constructor(member: Actor, input: GetPlanTaskInputType, dbService: PlanService) {
     super(member, dbService);
-    this.input = input;
+    this.input = input ?? {};
   }
 
   async run(handler: DatabaseTransactionHandler): Promise<void> {
@@ -32,7 +28,7 @@ export class GetPlanTask extends BasePlanTask<Plan> {
     const { planId } = this.input;
 
     const plan = await this.planService.getByPlanId(planId, handler);
-    if(!plan){
+    if (!plan) {
       throw new PlanNotFound(planId);
     }
 

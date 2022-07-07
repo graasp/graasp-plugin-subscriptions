@@ -10,8 +10,8 @@ import {
   TaskStatus,
 } from 'graasp';
 
-import { PlanService } from '../db-service';
 import { BaseTask } from '../../tasks/base-task';
+import { PlanService } from '../db-service';
 
 export abstract class BasePlanTask<R> extends BaseTask<R> {
   protected planService: PlanService;

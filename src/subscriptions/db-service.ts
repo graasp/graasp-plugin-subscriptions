@@ -1,4 +1,5 @@
-import { sql, DatabaseTransactionConnection as TrxHandler } from 'slonik';
+import { DatabaseTransactionConnection as TrxHandler, sql } from 'slonik';
+
 import { Subscription } from './interfaces/subscription';
 
 /**
@@ -36,7 +37,10 @@ export class SubscriptionService {
     ['updatedAt', 'updated_at'],
   ]);
 
-  async create(subscription: Partial<Subscription>, transactionHandler: TrxHandler): Promise<Subscription> {
+  async create(
+    subscription: Partial<Subscription>,
+    transactionHandler: TrxHandler,
+  ): Promise<Subscription> {
     return transactionHandler
       .query<Subscription>(
         sql`
@@ -78,8 +82,7 @@ export class SubscriptionService {
       .then(({ rows }) => rows[0] || null);
   }
 
-
-   async update(
+  async update(
     id: string,
     data: Partial<Subscription>,
     transactionHandler: TrxHandler,
@@ -88,8 +91,11 @@ export class SubscriptionService {
     // properties present in data
     const setValues = sql.join(
       Object.keys(data).map((key: keyof Subscription) =>
-       sql.join([sql.identifier([SubscriptionService.ReverseColumns.get(key)]), sql`${data[key]}`], sql` = `),
-       ),
+        sql.join(
+          [sql.identifier([SubscriptionService.ReverseColumns.get(key)]), sql`${data[key]}`],
+          sql` = `,
+        ),
+      ),
       sql`, `,
     );
 

@@ -1,27 +1,24 @@
 // global
+import { Stripe } from 'stripe';
+
 import { FastifyPluginAsync } from 'fastify';
 
+import { Member } from 'graasp';
+
+import { PlanTaskManager } from './plans/task-manager';
 // local
 import common, {
   changePlan,
+  getCurrentCustomer,
+  getOwnPlan,
   getPlan,
   getPlans,
-  getOwnPlan,
   getProrationPreview,
   setDefaultCard,
-  getCurrentCustomer,
 } from './schemas';
-import { TaskManager } from './stripe/task-manager';
-import { Stripe } from 'stripe';
-import { Member } from 'graasp';
+import { StripeTaskManager } from './stripe/task-manager';
+import { SubscriptionTaskManager } from './subscriptions/task-manager';
 import { API_VERSION } from './util/constants';
-import { GetPlanTask } from './plans/tasks/get-plan-task';
-import { PlanService } from './plans/db-service';
-import { CreateDefaultSubscriptionTask } from './subscriptions/tasks/create-default-subscription-task';
-import { SubscriptionService } from './subscriptions/db-service';
-import { GetSubscriptionTask } from './subscriptions/tasks/get-subscription-task';
-import { GetOwnPlanTask } from './stripe/tasks/get-own-plan-task';
-import { UpdateSubscriptionTask } from './subscriptions/tasks/update-subscription-task';
 
 interface GraaspSubscriptionsOptions {
   stripeSecretKey: string;
@@ -40,26 +37,32 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
   // Constants
   const stripe = new Stripe(stripeSecretKey, { apiVersion: API_VERSION });
 
-  const taskManager = new TaskManager(stripe);
+  const stipeTaskManager = new StripeTaskManager(stripe);
+
+  const planTaskManger = new PlanTaskManager();
+
+  const subscriptionTaskManager = new SubscriptionTaskManager();
 
   // schemas
   fastify.addSchema(common);
 
-  runner.setTaskPostHookHandler<Member>(memberTaskManager.getCreateTaskName(), async (member, actor, { handler }) => {
-      const t1 = new GetPlanTask(member, { planId: stripeDefaultProductId }, new PlanService());
-      const t2 = new CreateDefaultSubscriptionTask(member, new SubscriptionService());
-      t2.getInput = () => ({ defaultPlanId: t1.result.id});
+  runner.setTaskPostHookHandler<Member>(
+    memberTaskManager.getCreateTaskName(),
+    async (member, _actor, { handler }) => {
+      const t1 = planTaskManger.createGetPlanTask(member, { planId: stripeDefaultProductId });
+      const t2 = subscriptionTaskManager.createCreateDefaultSubscriptionTask(member);
+      t2.getInput = () => ({ defaultPlanId: t1.result.id });
 
-      const tasks = [ t1, t2 ];
-      for(const t of tasks){
+      for (const t of [t1, t2]) {
         if (t.getInput) Object.assign(t.input, t.getInput());
         await t.run(handler);
       }
-  });
+    },
+  );
 
   // get plans
   fastify.get('/plans', { schema: getPlans }, async ({ member, log }) => {
-    const task = taskManager.createGetPlansTask(member);
+    const task = stipeTaskManager.createGetPlansTask(member);
     return runner.runSingle(task, log);
   });
 
@@ -67,17 +70,18 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
     '/plans/:planId',
     { schema: getPlan },
     async ({ member, params: { planId }, log }) => {
-    const task = taskManager.createGetPlansTask(member, { product: planId });
-    return (await runner.runSingle(task, log))[0];
-  });
+      const task = stipeTaskManager.createGetPlansTask(member, { product: planId });
+      return (await runner.runSingle(task, log))[0];
+    },
+  );
 
   // get own plan
   fastify.get('/plans/own', { schema: getOwnPlan }, async ({ member, log }) => {
-    const t1 = new GetSubscriptionTask(member, { id: member.id }, new SubscriptionService());
-    const t2 = new GetOwnPlanTask(member, null, stripe);
-    t2.getInput = () => ({ subscriptionId: t1.result.subscriptionId});
+    const t1 = subscriptionTaskManager.createGetSubscriptionTask(member, { id: member.id });
+    const t2 = stipeTaskManager.createGetOwnPlanTask(member);
+    t2.getInput = () => ({ subscriptionId: t1.result.subscriptionId });
 
-    return runner.runSingleSequence([ t1, t2 ], log);
+    return runner.runSingleSequence([t1, t2], log);
   });
 
   // change plan
@@ -85,9 +89,9 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
     '/plans/:planId',
     { schema: changePlan },
     async ({ member, params: { planId }, body: { cardId }, log }) => {
+      const t1 = subscriptionTaskManager.createGetSubscriptionTask(member, { id: member.id });
 
-      const t1 = new GetSubscriptionTask(member, { id: member.id }, new SubscriptionService());
-      const t2 = taskManager.createCreateSubscriptionTask(member, {
+      const t2 = stipeTaskManager.createCreateSubscriptionTask(member, {
         priceId: planId,
         cardId,
       });
@@ -96,27 +100,29 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
         return { customerId: t1.result.customerId };
       };
 
-      const t3 = taskManager.createChangePlanTask(member, {
+      const t3 = stipeTaskManager.createChangePlanTask(member, {
         planId,
         cardId,
       });
-      t3.getInput = () => ({  subscriptionId: t1.result.subscriptionId ?? t2.result.subscriptionId });
+      t3.getInput = () => ({
+        subscriptionId: t1.result.subscriptionId ?? t2.result.subscriptionId,
+      });
 
-      const t4 = new GetPlanTask(member, {}, new PlanService());
+      const t4 = planTaskManger.createGetPlanTask(member);
       t4.getInput = () => ({
         planId: t3.result.id,
       });
 
-      const t5 = new UpdateSubscriptionTask(member, { subscription: {} }, new SubscriptionService());
+      const t5 = subscriptionTaskManager.createUpdateSubscriptionTask(member);
       t5.getInput = () => ({
-          subscription: {
-            id: t1.result.id,
-            subscriptionId: t1.result.subscriptionId ?? t2.result.subscriptionId,
-            planId: t4.result.id,
-          },
+        subscription: {
+          id: t1.result.id,
+          subscriptionId: t1.result.subscriptionId ?? t2.result.subscriptionId,
+          planId: t4.result.id,
+        },
       });
 
-      return runner.runSingleSequence([ t1, t2, t3, t4, t5], log);
+      return runner.runSingleSequence([t1, t2, t3, t4, t5], log);
     },
   );
 
@@ -124,8 +130,8 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
     '/plans/:planId/proration-preview',
     { schema: getProrationPreview },
     async ({ member, params: { planId }, log }) => {
-      const t1 = new GetSubscriptionTask(member, { id: member.id}, new SubscriptionService());
-      const t2 = taskManager.createGetProrationPreviewTask(member, { planId });
+      const t1 = subscriptionTaskManager.createGetSubscriptionTask(member, { id: member.id });
+      const t2 = stipeTaskManager.createGetProrationPreviewTask(member, { planId });
       t2.getInput = () => {
         return {
           customerId: t1.result.customerId,
@@ -133,16 +139,18 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
         };
       };
 
-      return runner.runSingleSequence([ t1, t2 ], log);
+      return runner.runSingleSequence([t1, t2], log);
     },
   );
 
   fastify.post('/setup-intent', async ({ member, log }) => {
     // if the member doesen't have a stripe account when adding a card, create a new customer
-    const t1 = new GetSubscriptionTask(member, { id: member.id }, new SubscriptionService());
-    const t2 = taskManager.createCreateCustomerTask(member, {member});
-    t2.getInput = () => { t2.skip = Boolean(t1.result.customerId); };
-    const t3 = new UpdateSubscriptionTask(member, { subscription: {} }, new SubscriptionService());
+    const t1 = subscriptionTaskManager.createGetSubscriptionTask(member, { id: member.id });
+    const t2 = stipeTaskManager.createCreateCustomerTask(member, { member });
+    t2.getInput = () => {
+      t2.skip = Boolean(t1.result.customerId);
+    };
+    const t3 = subscriptionTaskManager.createUpdateSubscriptionTask(member);
     t3.getInput = () => {
       t3.skip = t2.skip;
       return {
@@ -152,17 +160,17 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
         },
       };
     };
-    const t4 = taskManager.createCreateSetupIntentTask(member, {});
+    const t4 = stipeTaskManager.createCreateSetupIntentTask(member);
     t4.getInput = () => ({
-      customerId: t1.result?.customerId ?? t3.result.customerId
+      customerId: t1.result?.customerId ?? t3.result.customerId,
     });
 
-    return runner.runSingleSequence([ t1, t2, t3, t4], log);
+    return runner.runSingleSequence([t1, t2, t3, t4], log);
   });
 
   fastify.get('/cards', async ({ member, log }) => {
-    const t1 = new GetSubscriptionTask(member, { id: member.id }, new SubscriptionService());
-    const t2 = taskManager.createGetCardsTask(member);
+    const t1 = subscriptionTaskManager.createGetSubscriptionTask(member, { id: member.id });
+    const t2 = stipeTaskManager.createGetCardsTask(member);
     t2.getInput = () => ({ customerId: t1.result.customerId });
     return runner.runSingleSequence([t1, t2], log);
   });
@@ -171,21 +179,21 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
     '/cards/:cardId/default',
     { schema: setDefaultCard },
     async ({ member, params: { cardId }, log }) => {
-      const t1 = new GetSubscriptionTask(member, { id: member.id }, new SubscriptionService());
-      const t2 = taskManager.createSetDefaultCardTask(member, { cardId });
+      const t1 = subscriptionTaskManager.createGetSubscriptionTask(member, { id: member.id });
+      const t2 = stipeTaskManager.createSetDefaultCardTask(member, { cardId });
       t2.getInput = () => ({ customerId: t1.result.customerId });
 
-      return runner.runSingleSequence([ t1, t2 ], log);
+      return runner.runSingleSequence([t1, t2], log);
     },
   );
 
   fastify.get('/customer/current', { schema: getCurrentCustomer }, async ({ member, log }) => {
-    const t1 = new GetSubscriptionTask(member, {id: member.id }, new SubscriptionService());
-    const t2 = taskManager.createGetCustomerTask(member);
+    const t1 = subscriptionTaskManager.createGetSubscriptionTask(member, { id: member.id });
+    const t2 = stipeTaskManager.createGetCustomerTask(member);
     t2.getInput = () => {
-      if(t1.result.customerId){
+      if (t1.result.customerId) {
         return {
-          customerId: t1.result.customerId
+          customerId: t1.result.customerId,
         };
       }
       t2.skip = true;

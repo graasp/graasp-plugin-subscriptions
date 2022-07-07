@@ -1,6 +1,9 @@
 import { Stripe } from 'stripe';
+
 import { FastifyLoggerInstance } from 'fastify';
+
 import { Actor, DatabaseTransactionHandler } from 'graasp';
+
 import { Card } from '../interfaces/card';
 import { BaseStripeTask } from './base-stripe-task';
 
@@ -31,11 +34,10 @@ export class GetCardsTask extends BaseStripeTask<Card[]> {
         customer: customerId,
         type: 'card',
       })
-    ).data.map<Card>((pm) => ({ id: pm.id, brand: pm.card.brand, lastFourDigits: pm.card.last4 } ));
+    ).data.map<Card>((pm) => ({ id: pm.id, brand: pm.card.brand, lastFourDigits: pm.card.last4 }));
 
     this._result = cards;
 
     this.status = 'OK';
   }
 }
-

@@ -1,7 +1,7 @@
 import { Actor, DatabaseTransactionHandler } from 'graasp';
+
 import { SubscriptionService } from '../db-service';
 import { Subscription } from '../interfaces/subscription';
-
 import { BaseSubscriptionTask } from './base-subscription-task';
 
 export type CreateDefaultSubscriptionTaskInputType = {
@@ -18,8 +18,8 @@ export class CreateDefaultSubscriptionTask extends BaseSubscriptionTask<Subscrip
 
   constructor(
     member: Actor,
+    input: CreateDefaultSubscriptionTaskInputType,
     subscriptionService: SubscriptionService,
-    input?: CreateDefaultSubscriptionTaskInputType,
   ) {
     super(member, subscriptionService);
     this.input = input ?? {};
@@ -30,10 +30,13 @@ export class CreateDefaultSubscriptionTask extends BaseSubscriptionTask<Subscrip
 
     const { defaultPlanId } = this.input;
 
-    const result = await this.subscriptionService.create({
+    const result = await this.subscriptionService.create(
+      {
         creator: this.actor.id,
         planId: defaultPlanId,
-    }, handler);
+      },
+      handler,
+    );
 
     this._result = result;
 

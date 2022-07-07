@@ -1,6 +1,6 @@
 import { Stripe } from 'stripe';
 
-import { Member } from 'graasp';
+import { Actor } from 'graasp';
 
 import { ChangePlanTask, ChangePlanTaskInputType } from './tasks/change-plan-task';
 import { CreateCustomerTask, CreateCustomerTaskInputType } from './tasks/create-customer-task';
@@ -8,16 +8,22 @@ import {
   CreateSetupIntentTask,
   CreateSetupIntentTaskInputType,
 } from './tasks/create-setup-intent-task';
+import {
+  CreateSubscriptionTask,
+  CreateSubscriptionTaskInputType,
+} from './tasks/create-subscription-task';
 import { GetCardsTask, GetCardsTaskInputType } from './tasks/get-cards-task';
 import { GetCustomerTask, GetCustomerTaskInputType } from './tasks/get-customer-task';
 import { GetOwnPlanTask, GetOwnPlanTaskInputType } from './tasks/get-own-plan-task';
 import { GetPlansTask, GetPlansTaskInputType } from './tasks/get-plans-task';
-import { GetProrationPreviewTask, GetProrationPreviewTaskInputType } from './tasks/get-proration-preview-task';
+import {
+  GetProrationPreviewTask,
+  GetProrationPreviewTaskInputType,
+} from './tasks/get-proration-preview-task';
 import { SetDefaultCardTask, SetDefaultCardTaskInputType } from './tasks/set-default-card-task';
-import { CreateSubscriptionTask, CreateSubscriptionTaskInputType } from './tasks/create-subscription-task';
 
-export class TaskManager {
-  private stripe: Stripe;
+export class StripeTaskManager {
+  private readonly stripe: Stripe;
 
   constructor(stripe: Stripe) {
     this.stripe = stripe;
@@ -59,46 +65,49 @@ export class TaskManager {
     return CreateCustomerTask.name;
   }
 
-  createChangePlanTask(member: Member, input: ChangePlanTaskInputType): ChangePlanTask {
+  createChangePlanTask(member: Actor, input?: ChangePlanTaskInputType): ChangePlanTask {
     return new ChangePlanTask(member, input, this.stripe);
   }
 
-  createGetPlansTask(member: Member, input?: GetPlansTaskInputType): GetPlansTask {
+  createGetPlansTask(member: Actor, input?: GetPlansTaskInputType): GetPlansTask {
     return new GetPlansTask(member, this.stripe, input);
   }
 
-  createGetOwnPlanTask(member: Member, input: GetOwnPlanTaskInputType): GetOwnPlanTask {
+  createGetOwnPlanTask(member: Actor, input?: GetOwnPlanTaskInputType): GetOwnPlanTask {
     return new GetOwnPlanTask(member, input, this.stripe);
   }
 
-  createGetProrationPreviewTask(member: Member, input: GetProrationPreviewTaskInputType): GetProrationPreviewTask {
+  createGetProrationPreviewTask(
+    member: Actor,
+    input?: GetProrationPreviewTaskInputType,
+  ): GetProrationPreviewTask {
     return new GetProrationPreviewTask(member, input, this.stripe);
   }
 
   createCreateSetupIntentTask(
-    member: Member,
-    input: CreateSetupIntentTaskInputType,
+    member: Actor,
+    input?: CreateSetupIntentTaskInputType,
   ): CreateSetupIntentTask {
     return new CreateSetupIntentTask(member, input, this.stripe);
   }
 
-  createGetCardsTask(member: Member, input?: GetCardsTaskInputType): GetCardsTask {
+  createGetCardsTask(member: Actor, input?: GetCardsTaskInputType): GetCardsTask {
     return new GetCardsTask(member, input, this.stripe);
   }
 
-  createSetDefaultCardTask(member: Member, input: SetDefaultCardTaskInputType): SetDefaultCardTask {
+  createSetDefaultCardTask(member: Actor, input?: SetDefaultCardTaskInputType): SetDefaultCardTask {
     return new SetDefaultCardTask(member, input, this.stripe);
   }
 
-  createGetCustomerTask(member: Member, input?: GetCustomerTaskInputType): GetCustomerTask {
+  createGetCustomerTask(member: Actor, input?: GetCustomerTaskInputType): GetCustomerTask {
     return new GetCustomerTask(member, input, this.stripe);
   }
 
-  createCreateCustomerTask(member: Member, input: CreateCustomerTaskInputType) {
+  createCreateCustomerTask(member: Actor, input?: CreateCustomerTaskInputType) {
     return new CreateCustomerTask(member, input, this.stripe);
   }
 
-  createCreateSubscriptionTask(member: Member, input:CreateSubscriptionTaskInputType){
+  createCreateSubscriptionTask(member: Actor, input?: CreateSubscriptionTaskInputType) {
     return new CreateSubscriptionTask(member, input, this.stripe);
   }
 }

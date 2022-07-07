@@ -1,5 +1,8 @@
 // global
+import Stripe from 'stripe';
+
 import { FastifyLoggerInstance } from 'fastify';
+
 import {
   Actor,
   DatabaseTransactionHandler,
@@ -8,7 +11,7 @@ import {
   PreHookHandlerType,
   TaskStatus,
 } from 'graasp';
-import Stripe from 'stripe';
+
 import { BaseTask } from '../../tasks/base-task';
 
 export abstract class BaseStripeTask<R> extends BaseTask<R> {

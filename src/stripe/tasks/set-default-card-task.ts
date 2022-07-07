@@ -1,8 +1,11 @@
 import { Stripe } from 'stripe';
+
 import { FastifyLoggerInstance } from 'fastify';
+
 import { Actor, DatabaseTransactionHandler } from 'graasp';
-import { Card } from '../interfaces/card';
+
 import { CardNotFound } from '../../util/errors';
+import { Card } from '../interfaces/card';
 import { BaseStripeTask } from './base-stripe-task';
 
 export type SetDefaultCardTaskInputType = {
