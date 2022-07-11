@@ -1,4 +1,3 @@
-// global
 import Stripe from 'stripe';
 
 import { FastifyLoggerInstance } from 'fastify';

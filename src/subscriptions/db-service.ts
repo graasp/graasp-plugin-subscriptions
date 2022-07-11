@@ -10,7 +10,7 @@ export class SubscriptionService {
   private static allColumns = sql.join(
     [
       'id',
-      ['creator', 'creator'],
+      ['member_id', 'memberId'],
       ['customer_id', 'customerId'],
       ['subscription_id', 'subscriptionId'],
       ['plan_id', 'planId'],
@@ -29,7 +29,7 @@ export class SubscriptionService {
 
   private static ReverseColumns = new Map<string, string>([
     ['id', 'id'],
-    ['creator', 'creator'],
+    ['memberId', 'member_id'],
     ['customerId', 'customer_id'],
     ['subscriptionId', 'subscription_id'],
     ['planId', 'plan_id'],
@@ -45,11 +45,11 @@ export class SubscriptionService {
       .query<Subscription>(
         sql`
         INSERT INTO "member_plan" (
-          "creator",
+          "member_id",
           "plan_id"
         )
         VALUES (
-            ${subscription.creator},
+            ${subscription.memberId},
             ${subscription.planId}
         )
         RETURNING ${SubscriptionService.allColumns}
@@ -76,7 +76,7 @@ export class SubscriptionService {
         sql`
         SELECT ${SubscriptionService.allColumns}
         FROM member_plan
-        WHERE creator = ${id}
+        WHERE member_id = ${id}
       `,
       )
       .then(({ rows }) => rows[0] || null);

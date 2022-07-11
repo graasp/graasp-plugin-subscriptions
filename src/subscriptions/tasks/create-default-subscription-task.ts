@@ -32,7 +32,7 @@ export class CreateDefaultSubscriptionTask extends BaseSubscriptionTask<Subscrip
 
     const result = await this.subscriptionService.create(
       {
-        creator: this.actor.id,
+        memberId: this.actor.id,
         planId: defaultPlanId,
       },
       handler,

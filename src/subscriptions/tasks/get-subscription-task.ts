@@ -5,7 +5,7 @@ import { Subscription } from '../interfaces/subscription';
 import { BaseSubscriptionTask } from './base-subscription-task';
 
 export type GetSubscriptionTaskInputType = {
-  id?: string;
+  memberId?: string;
 };
 
 export class GetSubscriptionTask extends BaseSubscriptionTask<Subscription> {
@@ -28,9 +28,9 @@ export class GetSubscriptionTask extends BaseSubscriptionTask<Subscription> {
   async run(handler: DatabaseTransactionHandler): Promise<void> {
     this.status = 'RUNNING';
 
-    const { id } = this.input;
+    const { memberId } = this.input;
 
-    const result = await this.subscriptionService.getByMemberId(id, handler);
+    const result = await this.subscriptionService.getByMemberId(memberId, handler);
 
     this._result = result;
 

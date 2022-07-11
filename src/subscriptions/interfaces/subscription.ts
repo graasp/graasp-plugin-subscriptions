@@ -1,7 +1,9 @@
 export interface Subscription {
   id: string;
-  creator: string;
+  memberId: string;
   planId: string;
   customerId: string;
   subscriptionId: string;
+  createdAt: string;
+  updatedAt: string;
 }

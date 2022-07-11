@@ -1,6 +1,6 @@
 create table plan(
   "id" uuid UNIQUE DEFAULT uuid_generate_v4(),
-  "plan_id" character varying(100) NOT NULL,
+  "plan_id" UNIQUE character varying(100) NOT NULL,
   "storage" bigint,
   "created_at" timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc'),
   "updated_at" timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc')
@@ -14,7 +14,7 @@ EXECUTE PROCEDURE trigger_set_timestamp();
 
 create table member_plan(
   "id" uuid UNIQUE DEFAULT uuid_generate_v4(),
-  "creator" uuid REFERENCES "member" ("id") ON DELETE CASCADE,
+  "member_id" uuid REFERENCES "member" ("id") ON DELETE CASCADE,
   "plan_id" uuid REFERENCES "plan" ("id"),
   "customer_id" character varying(100),
   "subscription_id" character varying(100),
