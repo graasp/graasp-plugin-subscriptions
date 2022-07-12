@@ -53,7 +53,7 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
       const t2 = subscriptionTaskManager.createCreateDefaultSubscriptionTask(member);
       t2.getInput = () => ({ defaultPlanId: t1.result.id });
 
-      // If we use the runner, the member is not created when we want to insert the subscription. 
+      // If we use the runner, the member is not created when we want to insert the subscription.
       // A fix would be to modify the runner allowing it to run task in the current transaction.
       // We cannot use the task runner because the tasks will be run on a new transaction, and create the follwing SQL:
       // BEGIN TRANSACTION
@@ -101,7 +101,7 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
       const t1 = subscriptionTaskManager.createGetSubscriptionTask(member, { memberId: member.id });
 
       // This task is only called if the member doesn't have a subscriptionId stored in the DB.
-      // If the customer doesn't have a subscriptionId, it means it's it first subscription and 
+      // If the customer doesn't have a subscriptionId, it means it's it first subscription and
       // we create a new subscription in Stripe for the futur changes of plan
       const t2 = stipeTaskManager.createCreateSubscriptionTask(member, {
         priceId: planId,
@@ -141,9 +141,9 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
     },
   );
 
-  // Changes to a subscription such as can result in prorated charges. 
-  // For example, if a customer upgrades from a 10 GBP per month subscription to a 20 GBP option, 
-  // they’re charged prorated amounts for the time spent on each option. 
+  // Changes to a subscription such as can result in prorated charges.
+  // For example, if a customer upgrades from a 10 GBP per month subscription to a 20 GBP option,
+  // they’re charged prorated amounts for the time spent on each option.
   // Assuming the change occurred halfway through the billing period,
   // the customer is billed an additional 5 GBP: -5 GBP for unused time on the initial price, and 10 GBP for the remaining time on the new price.
   // source: https://stripe.com/docs/billing/subscriptions/prorations
@@ -165,11 +165,10 @@ const plugin: FastifyPluginAsync<GraaspSubscriptionsOptions> = async (fastify, o
   //   },
   // );
 
-
   // Use the Setup Intents API to set up a payment method for future payments. It’s similar to a payment, but no charge is created.
   // When setting up a card, for example, it may be necessary to authenticate the customer or check the card’s validity with the customer’s bank.
   // source: https://stripe.com/docs/payments/setup-intents
-  // This is used by the stripe React component to add a card. 
+  // This is used by the stripe React component to add a card.
   // This returns a code allowing the front end to do an operation on behalf of the customer
   fastify.post('/setup-intent', async ({ member, log }) => {
     // if the member doesn't have a stripe account when adding a card, create a new customer
