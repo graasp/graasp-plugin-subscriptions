@@ -2,7 +2,7 @@
 
 This plugin enables users to subscribe to different plans according to their needs.
 
-It uses `Stripe` to handle cards, payments and subscriptions. The maximum of the data should be processed on the backend and only the necessary data should be sent to `Stripe`.
+It uses `Stripe` to handle cards, payments and subscriptions. Only the necessary data should be sent to `Stripe` (ie. emails), and we store most of the data in our databases (ie. storage available).
 
 This plugin allows the user to perform the following action:
 
@@ -14,7 +14,7 @@ This plugin allows the user to perform the following action:
 
 ## Stripe
 
-Currently, this plugins needs to have `Stripe` configured. The following resources needs to be created :
+Currently, this plugins needs to have `Stripe` configured. The following resources need to be created :
 
 - **Products:** products represents the plan (free, standard, premium) 
 - **Metadata:** metadata allow to rank and filter (group, individual) the products
@@ -34,7 +34,7 @@ The minimal information for a product are the following (more information could 
   }
 ```
 
-Currently, the prices are using a monthly interval. All products should have the same currencies as a customer can only pay in one currency. The price of a product should contain the follwing informations:
+Currently, the products have monthly prices. All products should have the same currencies as a customer can only pay in one currency. The price of a product should contain the following informations:
 
 ```json
   {
@@ -71,7 +71,7 @@ Plans are stored on `Graasp` database, they allow the backend to easily access t
 
 ## Subscriptions
 
-Subscriptions are filling the following roles:
+Subscriptions fill the following roles:
 
 - Link a `Graasp` user to the default plan when created
 - Link a `Graasp` user with their current plan
