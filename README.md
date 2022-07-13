@@ -46,7 +46,7 @@ Currently, the products have monthly prices. All products should have the same c
   }
 ```
 
-Currently, the subscriptions are automatically charged. When a customer changes their plan, the backend changes the price attached to the subscription. When a subscription is updated the price is calculated using a [proration](https://stripe.com/docs/billing/subscriptions/prorations) from the time of change. The subscriptions contains the following data:
+Currently, the subscriptions are automatically charged. When a customer changes their plan, the backend changes the price attached to the subscription in `Stripe`. When a subscription is updated the price is calculated using a [proration](https://stripe.com/docs/billing/subscriptions/prorations) from the time of change. The subscriptions contains the following data:
 
 ```json
 {
@@ -76,7 +76,7 @@ Subscriptions fill the following roles:
 - Link a `Graasp` user to the default plan when created
 - Link a `Graasp` user with their current plan
 - Link a `Graasp` user with their corresponding `Stripe` customer
-- Link a `Graasp` user with their corresponding `Stripe` subscriptions
+- Link a `Graasp` user with their corresponding `Stripe` subscription
 
 Currently the `member_plan` table contains the following columns:
 
@@ -86,4 +86,4 @@ Currently the `member_plan` table contains the following columns:
 | member_id       | UUIDv4 | Id of the member
 | plan_id         | UUIDv4 | Id of the current plan for the member
 | customer_id     | string / NULL | Id of the customer in  `Stripe`, only set if the member has added a card
-| subscription_id | string / NULL | Id of the subscription in `Stripe`, only set if the member has changed to a payed plan
+| subscription_id | string / NULL | Id of the subscription in `Stripe`, only set if the member has changed to a paid plan

@@ -1,11 +1,7 @@
 import { Stripe } from 'stripe';
-
 import { FastifyPluginAsync } from 'fastify';
-
 import { Member } from 'graasp';
-
 import { PlanTaskManager } from './plans/task-manager';
-// local
 import common, {
   changePlan,
   getCurrentCustomer,
