@@ -27,3 +27,11 @@ CREATE TRIGGER "member_plan_set_timestamp"
 BEFORE UPDATE ON "member_plan"
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
+
+
+INSERT INTO member_plan (member_id, plan_id)
+SELECT id AS member_id, (SELECT id
+FROM plan
+WHERE plan_id='default_product_id') as plan_id
+FROM member
+WHERE NOT email ~* '/[a-zA-Z0-9]{4}\-[0-9]{13}\@graasp\.org/';
