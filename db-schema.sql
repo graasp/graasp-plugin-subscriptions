@@ -1,6 +1,6 @@
 create table plan(
   "id" uuid UNIQUE DEFAULT uuid_generate_v4(),
-  "plan_id" UNIQUE character varying(100) NOT NULL,
+  "plan_id" character varying(100) UNIQUE NOT NULL,
   "storage" bigint,
   "created_at" timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc'),
   "updated_at" timestamp NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc')

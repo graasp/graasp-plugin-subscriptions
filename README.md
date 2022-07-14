@@ -12,6 +12,8 @@ This plugin allows the user to perform the following action:
 - Get all plans or their current plan
 - Change the default card
 
+List of [test cards](https://stripe.com/docs/testing?numbers-or-method-or-token=card-numbers) `Stripe` accepts, these cards can be added to the account via the frontend.
+
 ## Stripe
 
 Currently, this plugins needs to have `Stripe` configured. The following resources need to be created :
