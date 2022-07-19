@@ -2,7 +2,7 @@ import { Stripe } from 'stripe';
 
 import { FastifyLoggerInstance } from 'fastify';
 
-import { Actor, DatabaseTransactionHandler } from 'graasp';
+import { Actor, DatabaseTransactionHandler, TaskStatus } from '@graasp/sdk';
 
 import { PlanNotFound, SubscriptionNotFound } from '../../util/errors';
 import { getProrationDate } from '../../util/utils';
@@ -29,7 +29,7 @@ export class GetProrationPreviewTask extends BaseStripeTask<Invoice> {
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     const { subscriptionId, customerId, planId } = this.input;
 
@@ -65,6 +65,6 @@ export class GetProrationPreviewTask extends BaseStripeTask<Invoice> {
       currency: invoice.currency,
     };
 
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
   }
 }
