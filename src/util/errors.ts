@@ -1,24 +1,10 @@
 import { StatusCodes } from 'http-status-codes';
 
-import { GraaspError, GraaspErrorDetails } from '@graasp/sdk';
+import { ErrorFactory } from '@graasp/sdk';
 
-export class GraaspSubscriptionsError implements GraaspError {
-  name: string;
-  code: string;
-  message: string;
-  statusCode?: number;
-  data?: unknown;
-  origin: 'core' | 'plugin';
+import { PLUGIN_NAME } from './constants';
 
-  constructor({ code, statusCode, message }: GraaspErrorDetails, data?: unknown) {
-    this.name = code;
-    this.code = code;
-    this.message = message;
-    this.statusCode = statusCode;
-    this.data = data;
-    this.origin = 'plugin';
-  }
-}
+export const GraaspSubscriptionsError = ErrorFactory(PLUGIN_NAME);
 
 export class PlanNotFound extends GraaspSubscriptionsError {
   constructor(data?: unknown) {
