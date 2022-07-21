@@ -722,9 +722,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graasp/sdk@github:graasp/graasp-utils#15/testUtils":
+"@graasp/sdk@github:graasp/graasp-sdk":
   version: 0.1.0
-  resolution: "@graasp/sdk@https://github.com/graasp/graasp-utils.git#commit=e80d31ed7a7794560c27d9df5e0e92734ce23027"
+  resolution: "@graasp/sdk@https://github.com/graasp/graasp-sdk.git#commit=513b28bc7081aca26ab55088eb12618f51eff922"
   dependencies:
     "@fastify/secure-session": 5.2.0
     aws-sdk: 2.1111.0
@@ -734,7 +734,7 @@ __metadata:
     qs: 6.11.0
     slonik: 28.1.1
     uuid: 8.3.2
-  checksum: b3b221dba17f703b702003eae6af71770f372d06f9f512c18e5f7dac1ce65dd28180f7235f213d0e60a611fbfc47e419a7d4726207ef127fe6c82129f0d02df8
+  checksum: b8e2d75f7a35aa3550bcf54aa998e5bb1738447095b4ee26102cf354e748399532ac4518f22a64c2f11d6cba82196dca3cace4256d16fafee0c548885f818193
   languageName: node
   linkType: hard
 
@@ -3296,7 +3296,7 @@ __metadata:
   dependencies:
     "@commitlint/cli": ^13.1.0
     "@commitlint/config-conventional": ^13.1.0
-    "@graasp/sdk": "github:graasp/graasp-utils#15/testUtils"
+    "@graasp/sdk": "github:graasp/graasp-sdk"
     "@trivago/prettier-plugin-sort-imports": 3.2.0
     "@types/eslint": ^7.2.5
     "@types/jest": 27.0.1
@@ -3306,7 +3306,7 @@ __metadata:
     eslint: ^7.13.0
     eslint-config-prettier: ^8.3.0
     fastify: ^3.29.1
-    graasp-test: "github:graasp/graasp-test#23/sdk"
+    graasp-test: "github:graasp/graasp-test"
     http-status-codes: 2.2.0
     husky: 7.0.4
     jest: 27.3.0
@@ -3319,12 +3319,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"graasp-test@github:graasp/graasp-test#23/sdk":
+"graasp-test@github:graasp/graasp-test":
   version: 0.1.0
-  resolution: "graasp-test@https://github.com/graasp/graasp-test.git#commit=73af5781a47ba63fc9e8012c916dad4272ca21b1"
+  resolution: "graasp-test@https://github.com/graasp/graasp-test.git#commit=3ff1f7951d1c2439f84fab546bf8de60b530bd1c"
   dependencies:
     uuid: 8.3.2
-  checksum: 76630f0be124bab0e460f8bfebc5811c29402b42ff693befdf920d9871a9390d701be6dd5abd2e88e0d53280f642fda62c68192f99e635eccba9f0fd6f325400
+  checksum: aaa3759fe2842de03fdc99011623dced835636fe5e15598c8574b9d526c040615dac3bf06fd351007a07d267493f9cd4e70c14ef35b0b73fb2810f90be4bbae8
   languageName: node
   linkType: hard
 
