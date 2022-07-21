@@ -1,4 +1,4 @@
-import { Actor, DatabaseTransactionHandler } from 'graasp';
+import { Actor, DatabaseTransactionHandler, TaskStatus } from '@graasp/sdk';
 
 import { SubscriptionService } from '../db-service';
 import { Subscription } from '../interfaces/subscription';
@@ -26,7 +26,7 @@ export class GetSubscriptionTask extends BaseSubscriptionTask<Subscription> {
   }
 
   async run(handler: DatabaseTransactionHandler): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     const { memberId } = this.input;
 
@@ -34,6 +34,6 @@ export class GetSubscriptionTask extends BaseSubscriptionTask<Subscription> {
 
     this._result = result;
 
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
   }
 }

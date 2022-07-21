@@ -1,6 +1,6 @@
 import fastify from 'fastify';
 
-import { ItemMembershipTaskManager, MemberTaskManager } from 'graasp';
+import { ItemMembershipTaskManager, MemberTaskManager } from '@graasp/sdk';
 import { ItemTaskManager, TaskRunner } from 'graasp-test';
 
 import plugin from '../src/service-api';

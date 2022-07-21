@@ -2,7 +2,7 @@ import { Stripe } from 'stripe';
 
 import { FastifyLoggerInstance } from 'fastify';
 
-import { Actor, DatabaseTransactionHandler } from 'graasp';
+import { Actor, DatabaseTransactionHandler, TaskStatus } from '@graasp/sdk';
 
 import { CardNotFound } from '../../util/errors';
 import { Card } from '../interfaces/card';
@@ -27,7 +27,7 @@ export class SetDefaultCardTask extends BaseStripeTask<Card> {
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     const { customerId, cardId } = this.input;
 
@@ -48,6 +48,6 @@ export class SetDefaultCardTask extends BaseStripeTask<Card> {
       lastFourDigits: paymentMethod.card.last4,
     };
 
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
   }
 }

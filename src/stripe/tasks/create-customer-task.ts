@@ -2,7 +2,7 @@ import { Stripe } from 'stripe';
 
 import { FastifyLoggerInstance } from 'fastify';
 
-import { Actor, DatabaseTransactionHandler, Member } from 'graasp';
+import { Actor, DatabaseTransactionHandler, Member, TaskStatus } from '@graasp/sdk';
 
 import { Subscription } from '../../subscriptions/interfaces/subscription';
 import { BaseStripeTask } from './base-stripe-task';
@@ -24,7 +24,7 @@ export class CreateCustomerTask extends BaseStripeTask<Partial<Subscription>> {
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     const { member } = this.input;
 
@@ -35,6 +35,6 @@ export class CreateCustomerTask extends BaseStripeTask<Partial<Subscription>> {
 
     this._result = { customerId: customer.id };
 
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
   }
 }

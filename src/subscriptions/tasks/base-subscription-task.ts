@@ -7,7 +7,7 @@ import {
   PostHookHandlerType,
   PreHookHandlerType,
   TaskStatus,
-} from 'graasp';
+} from '@graasp/sdk';
 
 import { BaseTask } from '../../tasks/base-task';
 import { SubscriptionService } from '../db-service';

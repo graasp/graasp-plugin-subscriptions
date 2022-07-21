@@ -1,6 +1,9 @@
 import { Stripe } from 'stripe';
+
 import { FastifyPluginAsync } from 'fastify';
-import { Member } from 'graasp';
+
+import { Member } from '@graasp/sdk';
+
 import { PlanTaskManager } from './plans/task-manager';
 import common, {
   changePlan,

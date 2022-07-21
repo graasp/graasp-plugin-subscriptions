@@ -2,7 +2,7 @@ import { Stripe } from 'stripe';
 
 import { FastifyLoggerInstance } from 'fastify';
 
-import { Actor, DatabaseTransactionHandler } from 'graasp';
+import { Actor, DatabaseTransactionHandler, TaskStatus } from '@graasp/sdk';
 
 import { Card } from '../interfaces/card';
 import { BaseStripeTask } from './base-stripe-task';
@@ -25,7 +25,7 @@ export class GetCardsTask extends BaseStripeTask<Card[]> {
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     const { customerId } = this.input;
 
@@ -38,6 +38,6 @@ export class GetCardsTask extends BaseStripeTask<Card[]> {
 
     this._result = cards;
 
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
   }
 }

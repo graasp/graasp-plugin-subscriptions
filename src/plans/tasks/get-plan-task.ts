@@ -1,4 +1,4 @@
-import { Actor, DatabaseTransactionHandler } from 'graasp';
+import { Actor, DatabaseTransactionHandler, TaskStatus } from '@graasp/sdk';
 
 import { PlanNotFound } from '../../util/errors';
 import { PlanService } from '../db-service';
@@ -23,7 +23,7 @@ export class GetPlanTask extends BasePlanTask<Plan> {
   }
 
   async run(handler: DatabaseTransactionHandler): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     const { planId } = this.input;
 
@@ -34,6 +34,6 @@ export class GetPlanTask extends BasePlanTask<Plan> {
 
     this._result = plan;
 
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
   }
 }

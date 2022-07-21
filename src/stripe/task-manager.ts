@@ -1,6 +1,6 @@
 import { Stripe } from 'stripe';
 
-import { Actor } from 'graasp';
+import { Actor } from '@graasp/sdk';
 
 import { ChangePlanTask, ChangePlanTaskInputType } from './tasks/change-plan-task';
 import { CreateCustomerTask, CreateCustomerTaskInputType } from './tasks/create-customer-task';

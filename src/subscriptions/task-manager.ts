@@ -1,4 +1,4 @@
-import { Actor } from 'graasp';
+import { Actor } from '@graasp/sdk';
 
 import { SubscriptionService } from './db-service';
 import {

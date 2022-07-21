@@ -1,4 +1,4 @@
-import { Actor } from 'graasp';
+import { Actor } from '@graasp/sdk';
 
 import { PlanService } from './db-service';
 import { GetPlanTask, GetPlanTaskInputType } from './tasks/get-plan-task';
