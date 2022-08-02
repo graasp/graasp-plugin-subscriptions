@@ -1,13 +1,12 @@
 import { StatusCodes } from 'http-status-codes';
 
-import { MemberTaskManager } from 'graasp';
+import { MemberTaskManager } from '@graasp/sdk';
 import { ItemMembershipTaskManager, ItemTaskManager, TaskRunner } from 'graasp-test';
-import Runner from 'graasp-test/src/tasks/taskRunner';
 
 import build from './app';
 import { CURRENT_CUSTOMER, DEFAULT_CARD, PLAN, SETUP_INTENT } from './fixtures';
 
-const runner = new Runner();
+const runner = new TaskRunner();
 const itemMembershipTaskManager = new ItemMembershipTaskManager();
 const memberTaskManager = {
   getCreateTaskName: jest.fn(),

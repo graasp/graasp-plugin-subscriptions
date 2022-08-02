@@ -2,7 +2,7 @@ import { Stripe } from 'stripe';
 
 import { FastifyLoggerInstance } from 'fastify';
 
-import { Actor, DatabaseTransactionHandler } from 'graasp';
+import { Actor, DatabaseTransactionHandler, TaskStatus } from '@graasp/sdk';
 
 import { Subscription } from '../../subscriptions/interfaces/subscription';
 import { COLLECTION_METHOD } from '../../util/constants';
@@ -28,7 +28,7 @@ export class CreateSubscriptionTask extends BaseStripeTask<Partial<Subscription>
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     const { customerId, priceId, cardId } = this.input;
 
@@ -42,6 +42,6 @@ export class CreateSubscriptionTask extends BaseStripeTask<Partial<Subscription>
     // The stripe informations are saved in the extra, should we save them in their own table ?
     this._result = { subscriptionId: subscription.id };
 
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
   }
 }

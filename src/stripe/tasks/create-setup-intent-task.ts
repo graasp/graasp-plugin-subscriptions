@@ -2,7 +2,7 @@ import { Stripe } from 'stripe';
 
 import { FastifyLoggerInstance } from 'fastify';
 
-import { Actor, DatabaseTransactionHandler } from 'graasp';
+import { Actor, DatabaseTransactionHandler, TaskStatus } from '@graasp/sdk';
 
 import { Intent } from '../interfaces/intent';
 import { BaseStripeTask } from './base-stripe-task';
@@ -24,7 +24,7 @@ export class CreateSetupIntentTask extends BaseStripeTask<Intent> {
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     const { customerId } = this.input;
 
@@ -34,6 +34,6 @@ export class CreateSetupIntentTask extends BaseStripeTask<Intent> {
 
     this._result = { clientSecret: intent.client_secret };
 
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
   }
 }

@@ -1,6 +1,9 @@
 import { Stripe } from 'stripe';
-import { Actor, DatabaseTransactionHandler } from 'graasp';
+
 import { FastifyLoggerInstance } from 'fastify';
+
+import { Actor, DatabaseTransactionHandler, TaskStatus } from '@graasp/sdk';
+
 import { CustomerNotFound } from '../../util/errors';
 import { Customer } from '../interfaces/customer';
 import { BaseStripeTask } from './base-stripe-task';
@@ -22,12 +25,12 @@ export class GetCustomerTask extends BaseStripeTask<Customer> {
     this.input = input ?? {};
   }
 
-  async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
-    this.status = 'RUNNING';
+  async run(_handler: DatabaseTransactionHandler, _log: FastifyLoggerInstance): Promise<void> {
+    this.status = TaskStatus.RUNNING;
 
     const { customerId } = this.input;
 
-    const customer = <Stripe.Customer>await this.stripeService.customers.retrieve(customerId);
+    const customer = (await this.stripeService.customers.retrieve(customerId)) as Stripe.Customer;
     if (!customer) {
       throw new CustomerNotFound(customerId);
     }
@@ -36,9 +39,9 @@ export class GetCustomerTask extends BaseStripeTask<Customer> {
       id: customer.id,
       name: customer.name,
       email: customer.email,
-      defaultCard: <string>customer.invoice_settings.default_payment_method,
+      defaultCard: customer.invoice_settings.default_payment_method as string,
     };
 
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
   }
 }

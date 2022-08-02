@@ -8,7 +8,7 @@ import {
   PreHookHandlerType,
   Task,
   TaskStatus,
-} from 'graasp';
+} from '@graasp/sdk';
 
 export abstract class BaseTask<R> implements Task<Actor, R> {
   protected _result: R;
@@ -29,7 +29,7 @@ export abstract class BaseTask<R> implements Task<Actor, R> {
 
   constructor(actor: Actor) {
     this.actor = actor;
-    this.status = 'NEW';
+    this.status = TaskStatus.NEW;
   }
 
   abstract get name(): string;

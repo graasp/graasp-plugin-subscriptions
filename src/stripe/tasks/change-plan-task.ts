@@ -1,16 +1,24 @@
 import { Stripe } from 'stripe';
-import { Actor, DatabaseTransactionHandler } from 'graasp';
+
 import { FastifyLoggerInstance } from 'fastify';
+
+import { Actor, DatabaseTransactionHandler, TaskStatus } from '@graasp/sdk';
+
+import {
+  BILLING_CYCLE_ANCHOR,
+  DEFAULT_PRICE,
+  PAYMENT_BEHAVIOR,
+  PRORATION_BEHAVIOR,
+} from '../../util/constants';
 import { PaymentFailed, PlanNotFound, SubscriptionNotFound } from '../../util/errors';
 import { Plan } from '../interfaces/plan';
-import { BILLING_CYCLE_ANCHOR, DEFAULT_PRICE, PAYMENT_BEHAVIOR, PRORATION_BEHAVIOR } from '../../util/constants';
 import { BaseStripeTask } from './base-stripe-task';
 
 export type ChangePlanTaskInputType = {
   planId?: string;
-  cardId?:string;
+  cardId?: string;
   subscriptionId?: string;
-}
+};
 
 export class ChangePlanTask extends BaseStripeTask<Plan> {
   get name(): string {
@@ -25,7 +33,7 @@ export class ChangePlanTask extends BaseStripeTask<Plan> {
   }
 
   async run(handler: DatabaseTransactionHandler, log: FastifyLoggerInstance): Promise<void> {
-    this.status = 'RUNNING';
+    this.status = TaskStatus.RUNNING;
 
     const { cardId, planId, subscriptionId } = this.input;
 
@@ -55,19 +63,22 @@ export class ChangePlanTask extends BaseStripeTask<Plan> {
         throw new PaymentFailed(planId);
       });
 
+    const product = plan.product as Stripe.Product;
     this._result = {
-      id: (<Stripe.Product>plan.product).id,
-      name: (<Stripe.Product>plan.product).name,
-      prices: [{
-        id: plan.id,
-        price: plan.unit_amount / 100 ?? DEFAULT_PRICE,
-        currency: plan.currency,
-        interval: plan.recurring.interval,
-      }],
-      description: (<Stripe.Product>plan.product).description,
-      level: Number((<Stripe.Product>plan.product).metadata['level']),
+      id: product.id,
+      name: product.name,
+      prices: [
+        {
+          id: plan.id,
+          price: plan.unit_amount / 100 ?? DEFAULT_PRICE,
+          currency: plan.currency,
+          interval: plan.recurring.interval,
+        },
+      ],
+      description: product.description,
+      level: Number(product.metadata['level']),
     };
 
-    this.status = 'OK';
+    this.status = TaskStatus.OK;
   }
 }
